@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Custom CSS for Flower Shop */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Floral-inspired color palette */
+:root {
+    --primary-color: #5D2B4C;
+    --secondary-color: #CFB8BE;
+    --accent-color: #F5EEE4;
+    --light-bg: #F0F2F5;
+    --text-dark: #2C1810;
+    --text-light: #6C757D;
+    --success-color: #28A745;
+    --warning-color: #FFC107;
+    --danger-color: #DC3545;
+}
+
+/* Smooth transitions */
+* {
+    transition: all 0.3s ease;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(93, 43, 76, 0.15);
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(93, 43, 76, 0.2);
+}
+
+/* Navigation hover effects */
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+}
+
+/* Product image zoom effect */
+.product-image {
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.product-image:hover img {
+    transform: scale(1.1);
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
