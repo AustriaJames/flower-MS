@@ -71,7 +71,14 @@ class RegisterController extends Controller
             'last_name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-Z\s]+$/'],
             'phone' => ['required', 'string', 'min:10', 'max:20', 'regex:/^[\+]?[0-9\s\-\(\)]+$/'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
-            'password' => ['required', 'string', 'min:8', 'max:255', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:255',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/u',
+            ],
         ], [
             'first_name.required' => 'First name is required.',
             'first_name.min' => 'First name must be at least 2 characters.',
@@ -101,7 +108,7 @@ class RegisterController extends Controller
             'password.min' => 'Password must be at least 8 characters.',
             'password.max' => 'Password cannot exceed 255 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
-            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and special character.',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
         ]);
     }
 

@@ -15,12 +15,17 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        // Regular flower categories (non-occasion)
         $regularCategories = Category::withCount('products')
-            ->where('is_occasion', false)
+            ->where(function ($query) {
+                $query->where('is_occasion', false)
+                      ->orWhereNull('is_occasion'); // Treat null as false
+            })
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
 
+        // Occasion categories
         $occasionCategories = Category::withCount('products')
             ->withCount('subCategories')
             ->where('is_occasion', true)
@@ -57,8 +62,8 @@ class CategoryController extends Controller
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
-        $data['is_occasion'] = $request->has('is_occasion');
-        $data['is_active'] = $request->has('is_active');
+        $data['is_occasion'] = $request->has('is_occasion') ? true : false;
+        $data['is_active'] = $request->has('is_active') ? true : false;
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('categories', 'public');
@@ -109,8 +114,8 @@ class CategoryController extends Controller
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
-        $data['is_occasion'] = $request->has('is_occasion');
-        $data['is_active'] = $request->has('is_active');
+        $data['is_occasion'] = $request->has('is_occasion') ? true : false;
+        $data['is_active'] = $request->has('is_active') ? true : false;
 
         if ($request->hasFile('image')) {
             // Delete old image if exists

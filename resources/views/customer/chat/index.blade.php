@@ -30,7 +30,7 @@
 
                 <div class="card-body p-0 d-flex flex-column" style="height: 500px;">
                     <!-- Messages Container -->
-                    <div class="flex-grow-1 p-3" id="messages-container" style="overflow-y: auto; max-height: 400px;">
+                    <div class="flex-grow-1 p-3" id="messages-container" style="overflow-y: auto;1234 max-height: 400px;">
                         @if($chat && $chat->messages->count() > 0)
                             @foreach($chat->messages as $message)
                                 <div class="message {{ $message->user_id === auth()->id() ? 'message-outgoing' : 'message-incoming' }} mb-3">
@@ -88,7 +88,7 @@
                         <div class="col-md-4 text-center">
                             <i class="fas fa-phone" style="font-size: 2rem; color: #5D2B4C;"></i>
                             <h6 class="mt-2" style="color: #5D2B4C;">Urgent Matters</h6>
-                            <p class="text-muted small">For urgent orders or issues, please call us directly at +1234 567 8900.</p>
+                            <p class="text-muted small">For urgent orders or issues, please call us directly at + 567 8900.</p>
                         </div>
                     </div>
                 </div>

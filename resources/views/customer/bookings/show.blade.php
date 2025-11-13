@@ -231,7 +231,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <i class="fas fa-phone" style="font-size: 2rem; color: #5D2B4C;"></i>
-                            <p class="mt-2">+1234 567 8900</p>
+                            <p class="mt-2">+0955 644 6048</p>
                         </div>
                         <div class="col-md-4">
                             <i class="fas fa-envelope" style="font-size: 2rem; color: #5D2B4C;"></i>

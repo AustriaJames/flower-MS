@@ -263,7 +263,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="d-flex align-items-center text-white small">
-                            <span class="me-3"><i class="fas fa-phone me-1"></i>+1234 567 8900</span>
+                            <span class="me-3"><i class="fas fa-phone me-1"></i>+0955 644 6048</span>
                             <span class="me-3"><i class="fas fa-envelope me-1"></i>info@bonasflowershop.com</span>
                             <span><i class="fas fa-clock me-1"></i>Mon-Fri: 9AM-6PM</span>
                         </div>
@@ -575,8 +575,8 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h6 class="text-white mb-3">Contact Info</h6>
-                        <p class="text-white-50 small mb-1">123 Flower Street, Garden City</p>
-                        <p class="text-white-50 small mb-1">+1234 567 8900</p>
+                        <p class="text-white-50 small mb-1">Bona's Flower Shop Silang Public Market</p>
+                        <p class="text-white-50 small mb-1">+0955 644 6048</p>
                         <p class="text-white-50 small mb-1">info@bonasflowershop.com</p>
                         <p class="text-white-50 small mb-3">Mon-Fri: 9AM-6PM</p>
 

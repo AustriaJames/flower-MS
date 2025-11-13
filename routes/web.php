@@ -93,9 +93,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Chat routes
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.sendMessage');
-Route::get('/chat/new-messages', [ChatController::class, 'getNewMessages'])->name('chat.getNewMessages');
-Route::post('/chat/mark-read', [ChatController::class, 'markAsRead'])->name('chat.markAsRead');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.sendMessage');
+    Route::get('/chat/new-messages', [ChatController::class, 'getNewMessages'])->name('chat.getNewMessages');
+    Route::post('/chat/mark-read', [ChatController::class, 'markAsRead'])->name('chat.markAsRead');
 
     // Profile routes
     Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
@@ -103,9 +103,9 @@ Route::post('/chat/mark-read', [ChatController::class, 'markAsRead'])->name('cha
 });
 
 // Tracking routes (public)
-Route::get('/track', [TrackingController::class, 'index'])->name('tracking.index');
-Route::get('/track/search', [TrackingController::class, 'track'])->name('tracking.track');
-Route::get('/track/{tracking_number}', [TrackingController::class, 'trackByNumber'])->name('tracking.track.number');
+    Route::get('/track', [TrackingController::class, 'index'])->name('tracking.index');
+    Route::get('/track/search', [TrackingController::class, 'track'])->name('tracking.track');
+    Route::get('/track/{tracking_number}', [TrackingController::class, 'trackByNumber'])->name('tracking.track.number');
 
 // Include admin routes
 require __DIR__.'/admin.php';

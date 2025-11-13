@@ -161,16 +161,7 @@
                                     <small class="form-text text-muted">Upload a JPG, PNG, GIF (max 2MB) or use URL below</small>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="main_image" class="form-label">Main Image URL (Alternative)</label>
-                                    <input type="url" class="form-control @error('main_image') is-invalid @enderror"
-                                           id="main_image" name="main_image" value="{{ old('main_image') }}"
-                                           placeholder="https://example.com/image.jpg">
-                                    @error('main_image')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <small class="form-text text-muted">Use this if you prefer to link to an external image</small>
-                                </div>
+                            
 
                                                                 <div class="mb-3">
                                     <label for="gallery_images_files" class="form-label">Gallery Images Upload</label>
