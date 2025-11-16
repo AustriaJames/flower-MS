@@ -33,13 +33,14 @@ class ReviewController extends Controller
             'user_id' => Auth::id(),
             'product_id' => $request->product_id,
             'rating' => $request->rating,
-            'comment' => $request->comment
+            'comment' => $request->comment,
+            'status' => 'pending'
         ]);
 
         // Update product average rating
         $this->updateProductRating($request->product_id);
 
-        return redirect()->back()->with('success', 'Review submitted successfully!');
+        return redirect()->back()->with('success', 'Review submitted successfully! It will be visible after admin approval.');
     }
 
     /**
@@ -86,11 +87,17 @@ class ReviewController extends Controller
     }
 
     /**
-     * Update product average rating.
+     * Update product average rating and review count.
      */
     private function updateProductRating($productId)
     {
-        $avgRating = Review::where('product_id', $productId)->avg('rating');
-        Product::where('id', $productId)->update(['rating' => round($avgRating, 1)]);
+        $reviews = Review::where('product_id', $productId)->approved();
+        $avgRating = $reviews->avg('rating');
+        $reviewCount = $reviews->count();
+        
+        Product::where('id', $productId)->update([
+            'rating' => $avgRating ? round($avgRating, 1) : 0,
+            'review_count' => $reviewCount
+        ]);
     }
 }

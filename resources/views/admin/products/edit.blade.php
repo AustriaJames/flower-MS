@@ -170,7 +170,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Current Main Image</label>
                                     <div class="border rounded p-2">
-                                        <img src="{{ $product->main_image }}" alt="Current main image"
+                                        <img src="{{ $product->main_image_url }}" alt="Current main image"
                                              class="img-thumbnail" style="max-height: 100px;">
                                     </div>
                                 </div>
@@ -192,7 +192,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Current Gallery Images</label>
                                     <div class="row">
-                                        @foreach($product->gallery_images as $image)
+                                        @foreach($product->gallery_image_urls as $image)
                                         <div class="col-md-4 mb-2">
                                             <img src="{{ $image }}" alt="Gallery image"
                                                  class="img-thumbnail" style="height: 80px; object-fit: cover;">

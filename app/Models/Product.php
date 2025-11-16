@@ -29,6 +29,8 @@ class Product extends Model
         'gallery_images',
         'specifications',
         'sort_order',
+        'rating',
+        'review_count',
         'category_id',
         'created_by',
     ];
@@ -44,6 +46,8 @@ class Product extends Model
         'gallery_images' => 'array',
         'specifications' => 'array',
         'sort_order' => 'integer',
+        'rating' => 'decimal:2',
+        'review_count' => 'integer',
     ];
 
     /**
@@ -92,6 +96,16 @@ class Product extends Model
     public function wishlistedBy(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'wishlists');
+    }
+
+    /**
+     * Get the bookings that include this product.
+     */
+    public function bookings(): BelongsToMany
+    {
+        return $this->belongsToMany(Booking::class, 'booking_product')
+                    ->withPivot(['quantity', 'price'])
+                    ->withTimestamps();
     }
 
     /**
@@ -170,5 +184,53 @@ class Product extends Model
         return $this->orderItems->sum(function ($item) {
             return $item->quantity * $item->price;
         });
+    }
+
+    /**
+     * Get the full URL for the main image.
+     */
+    public function getMainImageUrlAttribute()
+    {
+        if (!$this->main_image) {
+            return asset('images/placeholder-product.svg');
+        }
+
+        // If it's already a full URL, return as is
+        if (str_starts_with($this->main_image, 'http')) {
+            return $this->main_image;
+        }
+
+        // If it starts with /, it's a local path
+        if (str_starts_with($this->main_image, '/')) {
+            return asset($this->main_image);
+        }
+
+        // Otherwise, assume it's in uploads/products
+        return asset('uploads/products/' . $this->main_image);
+    }
+
+    /**
+     * Get the full URLs for gallery images.
+     */
+    public function getGalleryImageUrlsAttribute()
+    {
+        if (!$this->gallery_images || !is_array($this->gallery_images)) {
+            return [];
+        }
+
+        return array_map(function ($image) {
+            // If it's already a full URL, return as is
+            if (str_starts_with($image, 'http')) {
+                return $image;
+            }
+
+            // If it starts with /, it's a local path
+            if (str_starts_with($image, '/')) {
+                return asset($image);
+            }
+
+            // Otherwise, assume it's in uploads/products
+            return asset('uploads/products/' . $image);
+        }, $this->gallery_images);
     }
 }

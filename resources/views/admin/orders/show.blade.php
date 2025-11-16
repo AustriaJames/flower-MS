@@ -34,9 +34,24 @@
                                 'delivered' => 'success',
                                 'cancelled' => 'danger'
                             ];
+
                             $statusColor = $statusColors[$order->status] ?? 'secondary';
+
+                            $isPickup = $order->delivery_type === 'pickup';
+                            $displayStatus = $order->status;
+
+                            if ($isPickup) {
+                                $displayStatus = match($order->status) {
+                                    'confirmed' => 'Approved',
+                                    'processing' => 'For Preparation',
+                                    'delivered' => 'Ready for Pickup',
+                                    default => ucfirst($order->status),
+                                };
+                            } else {
+                                $displayStatus = ucfirst($order->status);
+                            }
                         @endphp
-                        <span class="badge bg-{{ $statusColor }} fs-6">{{ ucfirst($order->status) }}</span>
+                        <span class="badge bg-{{ $statusColor }} fs-6">{{ $displayStatus }}</span>
                         <span class="badge bg-info fs-6">{{ $order->orderItems->count() }} Items</span>
                         @if($order->cancellation_requested)
                             <span class="badge bg-warning fs-6">Cancellation Requested</span>
@@ -119,7 +134,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if($item->product->main_image)
-                                                <img src="{{ $item->product->main_image }}" alt="{{ $item->product->name }}"
+                                                <img src="{{ $item->product->main_image_url }}" alt="{{ $item->product->name }}"
                                                      class="img-thumbnail me-3" style="width: 40px; height: 40px; object-fit: cover;">
                                             @else
                                                 <div class="bg-light d-flex align-items-center justify-content-center me-3"
@@ -320,23 +335,42 @@
                 <div class="card-body">
                     <div class="d-grid gap-2">
                         <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-primary dropdown-toggle w-100" type="button" onclick="toggleOrderStatusDropdown(this)">
                                 <i class="fas fa-tasks me-2"></i>Update Status
                             </button>
                             <ul class="dropdown-menu w-100">
-                                @foreach(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'] as $status)
-                                    @if($status !== $order->status)
-                                        <li>
-                                            <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-inline">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="{{ $status }}">
-                                                <button type="submit" class="dropdown-item">
-                                                    Mark as {{ ucfirst($status) }}
-                                                </button>
-                                            </form>
-                                        </li>
+                                @php
+                                    $allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+                                    $isPickup = $order->delivery_type === 'pickup';
+                                @endphp
+                                @foreach($allStatuses as $status)
+                                    @if($status === $order->status)
+                                        @continue
                                     @endif
+                                    @php
+                                        if ($isPickup && $status === 'shipped') {
+                                            continue;
+                                        }
+                                        $label = ucfirst($status);
+                                        if ($isPickup) {
+                                            $label = match($status) {
+                                                'confirmed' => 'Approved',
+                                                'processing' => 'For Preparation',
+                                                'delivered' => 'Ready for Pickup',
+                                                default => ucfirst($status),
+                                            };
+                                        }
+                                    @endphp
+                                    <li>
+                                        <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="{{ $status }}">
+                                            <button type="submit" class="dropdown-item">
+                                                Mark as {{ $label }}
+                                            </button>
+                                        </form>
+                                    </li>
                                 @endforeach
                             </ul>
                         </div>
@@ -438,3 +472,33 @@
 @endif
 
 @endsection
+
+@push('scripts')
+<script>
+    function toggleOrderStatusDropdown(button) {
+        // Close any other open dropdowns in the Quick Actions card
+        document.querySelectorAll('.card .dropdown-menu.show').forEach(function(menu) {
+            if (menu !== button.nextElementSibling) {
+                menu.classList.remove('show');
+            }
+        });
+
+        const menu = button.nextElementSibling;
+        if (menu) {
+            menu.classList.toggle('show');
+        }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const isButton = event.target.closest('.btn.btn-primary.dropdown-toggle');
+        const isMenu = event.target.closest('.dropdown-menu');
+
+        if (!isButton && !isMenu) {
+            document.querySelectorAll('.card .dropdown-menu.show').forEach(function(menu) {
+                menu.classList.remove('show');
+            });
+        }
+    });
+</script>
+@endpush

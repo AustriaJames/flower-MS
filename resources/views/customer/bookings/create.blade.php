@@ -61,8 +61,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="guest_count" class="form-label fw-bold">Expected Guest Count</label>
-                                    <input type="number" class="form-control" id="guest_count" name="guest_count" min="1" placeholder="e.g., 50">
+                                    <label for="guest_count" class="form-label fw-bold">Expected Guest Count *</label>
+                                    <input type="number" class="form-control" id="guest_count" name="guest_count" min="1" placeholder="e.g., 50" required>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -132,6 +132,20 @@
                             </div>
                         </div>
 
+                        <!-- Occasion Category -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3" style="color: #5D2B4C;">Occasion Category *</h5>
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label fw-bold">Select Occasion</label>
+                                <select class="form-select" id="category_id" name="category_id" required>
+                                    <option value="">Choose an occasion</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Additional Services -->
                         <div class="mb-4">
                             <h5 class="fw-bold mb-3" style="color: #5D2B4C;">Additional Services</h5>
@@ -167,13 +181,17 @@
                             </div>
                         </div>
 
-                        <!-- Contact Information -->
+                        <!-- Venue & Contact Information -->
                         <div class="mb-4">
                             <h5 class="fw-bold mb-3" style="color: #5D2B4C;">Contact Information</h5>
+                            <div class="mb-3">
+                                <label for="venue_address" class="form-label fw-bold">Venue Address *</label>
+                                <textarea class="form-control" id="venue_address" name="venue_address" rows="2" placeholder="Complete venue address" required></textarea>
+                            </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="contact_name" class="form-label fw-bold">Contact Person *</label>
-                                    <input type="text" class="form-control" id="contact_name" name="contact_name" value="{{ auth()->user()->name ?? '' }}" required>
+                                    <label for="contact_person" class="form-label fw-bold">Contact Person *</label>
+                                    <input type="text" class="form-control" id="contact_person" name="contact_person" value="{{ auth()->user()->name ?? '' }}" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="contact_phone" class="form-label fw-bold">Contact Phone *</label>
@@ -191,7 +209,7 @@
                             <h5 class="fw-bold mb-3" style="color: #5D2B4C;">Special Requests</h5>
                             <div class="mb-3">
                                 <label for="special_requests" class="form-label">Additional Requirements</label>
-                                <textarea class="form-control" id="special_requests" name="special_requests" rows="3" placeholder="Any special requests or specific requirements for your event?"></textarea>
+                                <textarea class="form-control" id="special_requirements" name="special_requirements" rows="3" placeholder="Any special requests or specific requirements for your event?"></textarea>
                             </div>
                         </div>
 
@@ -271,9 +289,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedDate = new Date(this.value);
         const dayOfWeek = selectedDate.getDay();
 
-        if (dayOfWeek === 0) { // Sunday
-            alert('Sorry, we do not work on Sundays. Please select another date.');
-            this.value = '';
+        if (dayOfWeek === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Unavailable Day',
+                text: 'Sorry, we do not work on Sundays. Please select another date.',
+            }).then(() => {
+                eventDateInput.value = '';
+            });
         }
     });
 
@@ -311,7 +334,11 @@ document.addEventListener('DOMContentLoaded', function() {
     bookingForm.addEventListener('submit', function(e) {
         if (!document.getElementById('terms').checked) {
             e.preventDefault();
-            alert('Please agree to the Terms and Conditions.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Terms Required',
+                text: 'Please agree to the Terms and Conditions before submitting.',
+            });
             return;
         }
 
@@ -320,10 +347,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const daysDifference = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
 
         if (daysDifference < 7) {
-            if (!confirm('Your event is less than 7 days away. We may not be able to accommodate all requests. Do you want to continue?')) {
-                e.preventDefault();
-                return;
-            }
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Short Notice Event',
+                text: 'Your event is less than 7 days away. We may not be able to accommodate all requests. Do you want to continue?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, continue',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    bookingForm.submit();
+                }
+            });
         }
     });
 });

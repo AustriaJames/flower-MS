@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Services\PhpMailerService;
 
 class OrderController extends Controller
 {
+    protected PhpMailerService $mailer;
+
+    public function __construct(PhpMailerService $mailer)
+    {
+        $this->mailer = $mailer;
+    }
     public function index(Request $request)
     {
         $orders = Order::with(['user', 'orderItems.product'])->latest()->get();
@@ -63,6 +70,9 @@ class OrderController extends Controller
             $order->update(['delivered_at' => now()]);
         }
 
+        // Send status update email
+        $this->sendOrderStatusEmail($order);
+
         return redirect()->route('admin.orders.show', $order)
             ->with('success', 'Order updated successfully!');
     }
@@ -91,6 +101,9 @@ class OrderController extends Controller
         if ($request->status === 'delivered') {
             $order->update(['delivered_at' => now()]);
         }
+
+        // Send status update email
+        $this->sendOrderStatusEmail($order, $oldStatus);
 
         return redirect()->back()->with('success', "Order status updated from {$oldStatus} to {$request->status}!");
     }
@@ -133,6 +146,9 @@ class OrderController extends Controller
             'cancellation_requested' => false
         ]);
 
+        // Send status update email
+        $this->sendOrderStatusEmail($order, 'confirmed');
+
         return redirect()->back()->with('success', 'Cancellation request approved. Order has been cancelled.');
     }
 
@@ -172,6 +188,29 @@ class OrderController extends Controller
 
         $order->update(['cancellation_requested' => false]);
 
+        // Send status update email (still confirmed)
+        $this->sendOrderStatusEmail($order, 'confirmed');
+
         return redirect()->back()->with('success', 'Cancellation request rejected. Order remains confirmed.');
+    }
+
+    private function sendOrderStatusEmail(Order $order, ?string $oldStatus = null): void
+    {
+        if (!$order->user || !$order->user->email) {
+            return;
+        }
+
+        $user = $order->user;
+        $email = $user->email;
+        $toName = $user->name ?? trim($user->first_name . ' ' . $user->last_name);
+
+        $subject = 'Order Status Updated - ' . config('app.name') . ' (Order ' . $order->order_number . ')';
+        $htmlBody = view('emails.orders.status', [
+            'order' => $order,
+            'user' => $user,
+            'oldStatus' => $oldStatus,
+        ])->render();
+
+        $this->mailer->send($email, $toName ?: $email, $subject, $htmlBody);
     }
 }

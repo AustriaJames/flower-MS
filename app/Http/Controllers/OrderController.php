@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Services\PhpMailerService;
 
 class OrderController extends Controller
 {
+    protected PhpMailerService $mailer;
+
+    public function __construct(PhpMailerService $mailer)
+    {
+        $this->middleware('auth');
+        $this->mailer = $mailer;
+    }
     /**
      * Display customer orders.
      */
@@ -231,6 +239,9 @@ class OrderController extends Controller
 
             DB::commit();
 
+            // Send order placed email
+            $this->sendOrderPlacedEmail($order, $request->email ?? Auth::user()->email);
+
             return redirect()->route('orders.show', $order)
                 ->with('success', 'Order placed successfully! Your order number is ' . $order->order_number . '. We will contact you soon to confirm your order.');
 
@@ -324,5 +335,22 @@ class OrderController extends Controller
         }
     }
 
+    private function sendOrderPlacedEmail(Order $order, string $email): void
+    {
+        if (!$email) {
+            return;
+        }
+
+        $user = Auth::user();
+        $toName = $user ? ($user->name ?? trim($user->first_name . ' ' . $user->last_name)) : $email;
+
+        $subject = 'Order Placed - ' . config('app.name') . ' (Order ' . $order->order_number . ')';
+        $htmlBody = view('emails.orders.placed', [
+            'order' => $order,
+            'user' => $user,
+        ])->render();
+
+        $this->mailer->send($email, $toName, $subject, $htmlBody);
+    }
 
 }

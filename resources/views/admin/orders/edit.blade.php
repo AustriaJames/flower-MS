@@ -57,9 +57,27 @@
                                 <label for="status" class="form-label">Order Status <span class="text-danger">*</span></label>
                                 <select class="form-select @error('status') is-invalid @enderror"
                                         id="status" name="status" required>
-                                    @foreach(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'] as $status)
+                                    @php
+                                        $allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+                                        $isPickup = $order->delivery_type === 'pickup';
+                                    @endphp
+                                    @foreach($allStatuses as $status)
+                                        @php
+                                            if ($isPickup && $status === 'shipped') {
+                                                continue;
+                                            }
+                                            $label = ucfirst($status);
+                                            if ($isPickup) {
+                                                $label = match($status) {
+                                                    'confirmed' => 'Approved',
+                                                    'processing' => 'For Preparation',
+                                                    'delivered' => 'Ready for Pickup',
+                                                    default => ucfirst($status),
+                                                };
+                                            }
+                                        @endphp
                                         <option value="{{ $status }}" {{ old('status', $order->status) == $status ? 'selected' : '' }}>
-                                            {{ ucfirst($status) }}
+                                            {{ $label }}
                                         </option>
                                     @endforeach
                                 </select>

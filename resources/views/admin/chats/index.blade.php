@@ -11,11 +11,11 @@
                 <h1 class="page-title">Chat Support</h1>
                 <p class="text-muted mb-0">Manage customer support conversations</p>
             </div>
-            <div>
+            {{-- <div>
                 <a href="{{ route('admin.chats.statistics') }}" class="btn btn-info">
                     <i class="bi bi-graph-up"></i> Statistics
                 </a>
-            </div>
+            </div> --}}
         </div>
     </div>
 

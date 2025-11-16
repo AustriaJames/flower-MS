@@ -14,10 +14,14 @@
                 @foreach($categories as $category)
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card border-0 shadow-lg h-100 text-center category-card" style="border-radius: 20px;">
+                        <div class="category-image" style="height: 200px; background: #F0F2F5; border-radius: 20px 20px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            @if($category->image)
+                                <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                <i class="fas fa-flower-tulip" style="font-size: 4rem; color: #CFB8BE;"></i>
+                            @endif
+                        </div>
                         <div class="card-body p-4">
-                            <div class="mb-3">
-                                <i class="fas fa-flower-tulip" style="font-size: clamp(2.5rem, 6vw, 3rem); color: #5D2B4C;"></i>
-                            </div>
                             <h5 class="fw-bold" style="color: #5D2B4C;">{{ $category->name }}</h5>
                             <p class="text-muted small">{{ Str::limit($category->description, 80) }}</p>
                             <div class="text-muted small mb-3">{{ $category->products_count ?? 0 }}+ Products</div>

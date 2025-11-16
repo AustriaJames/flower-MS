@@ -69,7 +69,7 @@
 
                         <div class="col-md-6">
                             @if($product->main_image)
-                                <img src="{{ $product->main_image }}" alt="{{ $product->name }}"
+                                <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}"
                                      class="img-fluid rounded shadow-sm" style="max-height: 200px;">
                             @else
                                 <div class="bg-light d-flex align-items-center justify-content-center rounded"
@@ -117,7 +117,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        @foreach($product->gallery_images as $image)
+                        @foreach($product->gallery_image_urls as $image)
                         <div class="col-md-4 mb-3">
                             <img src="{{ $image }}" alt="Gallery Image"
                                  class="img-fluid rounded shadow-sm" style="height: 150px; object-fit: cover;">

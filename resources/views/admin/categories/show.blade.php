@@ -94,7 +94,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if($product->main_image)
-                                                <img src="{{ $product->main_image }}" alt="{{ $product->name }}"
+                                                <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}"
                                                      class="img-thumbnail me-3" style="width: 40px; height: 40px; object-fit: cover;">
                                             @else
                                                 <div class="bg-light d-flex align-items-center justify-content-center me-3"

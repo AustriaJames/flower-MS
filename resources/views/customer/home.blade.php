@@ -110,8 +110,8 @@
                     <div class="card-body p-4">
                         <div class="text-center mb-3">
                             <div class="product-image bg-light rounded p-4 mb-3" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                                @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
+                                @if($product->main_image)
+                                    <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
                                 @else
                                     <i class="fas fa-flower-tulip" style="font-size: 4rem; color: #CFB8BE;"></i>
                                 @endif
@@ -175,10 +175,14 @@
             @forelse($categories as $category)
             <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="card border-0 shadow-lg h-100 text-center category-card" style="border-radius: 20px;">
+                    <div class="category-image" style="height: 200px; background: #F0F2F5; border-radius: 20px 20px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        @if($category->image)
+                            <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            <i class="fas fa-flower-tulip" style="font-size: 4rem; color: #CFB8BE;"></i>
+                        @endif
+                    </div>
                     <div class="card-body p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-flower-tulip" style="font-size: clamp(2.5rem, 6vw, 3rem); color: #5D2B4C;"></i>
-                        </div>
                         <h5 class="fw-bold" style="color: #5D2B4C;">{{ $category->name }}</h5>
                         <p class="text-muted small">{{ Str::limit($category->description, 80) }}</p>
                         <div class="text-muted small mb-3">{{ $category->products_count ?? 0 }}+ Products</div>
@@ -248,13 +252,42 @@
                     <a href="{{ route('products.index') }}" class="btn btn-lg fw-semibold text-white border-white" style="background: transparent; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
                         <i class="fas fa-shopping-bag me-2"></i>Shop Now
                     </a>
-                    <a href="{{ route('bookings.create') }}" class="btn btn-lg fw-semibold" style="background: white; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
-                        <i class="fas fa-calendar-plus me-2"></i>Book Event
-                    </a>
+                    @auth
+                        <a href="{{ route('bookings.create') }}" class="btn btn-lg fw-semibold" style="background: white; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
+                            <i class="fas fa-calendar-plus me-2"></i>Book Event
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-lg fw-semibold" style="background: white; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
+                            <i class="fas fa-calendar-plus me-2"></i>Book Event
+                        </a>
+                    @endauth
                 </div>
             </div>
             <div class="col-lg-4 col-md-12 text-center">
                 <i class="fas fa-gift" style="font-size: clamp(6rem, 15vw, 10rem); color: rgba(255,255,255,0.3);"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Location Map Section -->
+<section class="py-5" style="background: #F0F2F5;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-12 mb-4 mb-lg-0">
+                <h2 class="display-6 fw-bold mb-3" style="color: #5D2B4C;">Visit Our Shop</h2>
+                <p class="lead mb-3" style="color: #6c757d;">We are located at Silang Public Market, Cavite. Drop by to see our fresh flowers and arrangements in person.</p>
+                <p class="mb-2" style="color: #5D2B4C;"><i class="fas fa-map-marker-alt me-2"></i>Bona's Flower Shop, Silang Public Market, Cavite</p>
+                <p class="mb-2" style="color: #5D2B4C;"><i class="fas fa-phone me-2"></i>+0955 644 6048</p>
+                <p class="mb-0" style="color: #5D2B4C;"><i class="fas fa-clock me-2"></i>Mon - Fri: 9:00 AM - 6:00 PM</p>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="ratio ratio-16x9 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                    <iframe
+                        src="https://www.google.com/maps?q=Silang+Cavite+Public+Market&output=embed"
+                        style="border:0;" allowfullscreen loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -359,9 +392,8 @@
 <script>
 function addToCart(productId) {
     @guest
-        // Show login modal for guests
-        const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-        loginModal.show();
+        // Redirect guests to login page
+        window.location.href = '{{ route('login') }}';
     @else
         // Add to cart for authenticated users
         $.ajax({
@@ -376,10 +408,21 @@ function addToCart(productId) {
             success: function(data) {
                 console.log('Add to cart success:', data);
                 if (data.success) {
-                    alert('Product added to cart successfully!');
-                    location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Cart',
+                        text: 'Product added to cart successfully!',
+                        confirmButtonColor: '#5D2B4C'
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
-                    alert('Error adding product to cart: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Add to Cart Failed',
+                        text: data.message || 'Error adding product to cart. Please try again.',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -387,15 +430,21 @@ function addToCart(productId) {
                 console.error('Status:', status);
                 console.error('Error:', error);
 
+                let message = 'Error adding product to cart. Please try again.';
                 if (xhr.status === 404) {
-                    alert('Product not found. Please refresh the page.');
+                    message = 'Product not found. Please refresh the page.';
                 } else if (xhr.status === 403) {
-                    alert('Access denied. Please log in again.');
+                    message = 'Access denied. Please log in again.';
                 } else if (xhr.status === 500) {
-                    alert('Server error occurred. Please try again.');
-                } else {
-                    alert('Error adding product to cart. Please try again.');
+                    message = 'Server error occurred. Please try again.';
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Add to Cart Failed',
+                    text: message,
+                    confirmButtonColor: '#5D2B4C'
+                });
             }
         });
     @endguest
@@ -403,9 +452,8 @@ function addToCart(productId) {
 
 function addToWishlist(productId) {
     @guest
-        // Show login modal for guests
-        const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-        loginModal.show();
+        // Redirect guests to login page
+        window.location.href = '{{ route('login') }}';
     @else
         // Add to wishlist for authenticated users
         $.ajax({
@@ -419,9 +467,19 @@ function addToWishlist(productId) {
             success: function(data) {
                 console.log('Add to wishlist success:', data);
                 if (data.success) {
-                    alert('Product added to wishlist!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Wishlist',
+                        text: 'Product added to wishlist!',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 } else {
-                    alert('Error adding product to wishlist: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wishlist Failed',
+                        text: data.message || 'Error adding product to wishlist. Please try again.',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -429,15 +487,21 @@ function addToWishlist(productId) {
                 console.error('Status:', status);
                 console.error('Error:', error);
 
+                let message = 'Error adding product to wishlist. Please try again.';
                 if (xhr.status === 404) {
-                    alert('Product not found. Please refresh the page.');
+                    message = 'Product not found. Please refresh the page.';
                 } else if (xhr.status === 403) {
-                    alert('Access denied. Please log in again.');
+                    message = 'Access denied. Please log in again.';
                 } else if (xhr.status === 500) {
-                    alert('Server error occurred. Please try again.');
-                } else {
-                    alert('Error adding product to wishlist. Please try again.');
+                    message = 'Server error occurred. Please try again.';
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wishlist Failed',
+                    text: message,
+                    confirmButtonColor: '#5D2B4C'
+                });
             }
         });
     @endguest

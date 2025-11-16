@@ -70,7 +70,9 @@ class ProductController extends Controller
             abort(404);
         }
 
-        $product->load(['category', 'reviews.user']);
+        $product->load(['category', 'reviews' => function($query) {
+            $query->approved()->with('user');
+        }]);
 
         // Get related products
         $relatedProducts = Product::where('category_id', $product->category_id)

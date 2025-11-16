@@ -18,7 +18,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Category Information</h6>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('admin.categories.store') }}">
+            <form method="POST" action="{{ route('admin.categories.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -49,6 +49,16 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
+                                    <label for="image" class="form-label">Category Image</label>
+                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                           id="image" name="image" accept="image/*">
+                                    @error('image')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">Upload JPG, PNG, GIF (max 2MB)</small>
+                                </div>
+
+                                <div class="mb-3">
                                     <label for="icon" class="form-label">Icon <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('icon') is-invalid @enderror"
                                            id="icon" name="icon" value="{{ old('icon', 'bi bi-tag') }}" required>
@@ -65,6 +75,27 @@
                                     @error('sort_order')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="is_occasion" name="is_occasion"
+                                               value="1" {{ old('is_occasion', request('type') === 'occasion') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="is_occasion">
+                                            Occasion Category
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted">Enable this if this category is for a special occasion (e.g. Valentines, Mother's Day).</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="occasion_date" class="form-label">Occasion Date</label>
+                                    <input type="date" class="form-control @error('occasion_date') is-invalid @enderror"
+                                           id="occasion_date" name="occasion_date" value="{{ old('occasion_date') }}">
+                                    @error('occasion_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">Optional. Used to sort and highlight upcoming occasions.</small>
                                 </div>
 
                                 <div class="mb-3">

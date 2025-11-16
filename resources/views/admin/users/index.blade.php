@@ -100,47 +100,6 @@
                                        class="btn-action btn-warning" title="Edit User">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <button type="button" class="btn-action btn-primary dropdown-toggle"
-                                            data-bs-toggle="dropdown" title="Quick Actions">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        @if($user->id !== auth()->id())
-                                            <li>
-                                                <form method="POST" action="{{ route('admin.users.toggle-admin', $user) }}" class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="dropdown-item">
-                                                        @if($user->is_admin)
-                                                            <i class="bi bi-person-dash me-2"></i>Remove Admin
-                                                        @else
-                                                            <i class="bi bi-shield-check me-2"></i>Make Admin
-                                                        @endif
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                                        data-bs-target="#resetPasswordModal{{ $user->id }}">
-                                                    <i class="bi bi-key me-2"></i>Reset Password
-                                                </button>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                                      class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="bi bi-trash me-2"></i>Delete User
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        @else
-                                            <li><span class="dropdown-item-text text-muted">Cannot modify own account</span></li>
-                                        @endif
-                                    </ul>
                                 </div>
                             </td>
                         </tr>

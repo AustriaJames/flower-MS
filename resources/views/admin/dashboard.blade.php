@@ -9,14 +9,38 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm" style="background: var(--primary-color); border-radius: 15px;">
                 <div class="card-body text-white p-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h2 class="mb-2 fw-bold">Welcome back, {{ Auth::user()->name }}! 👋</h2>
-                            <p class="mb-0 opacity-75">Here's what's happening with your flower shop today.</p>
+                    <div class="row align-items-center g-3">
+                        <div class="col-lg-8 col-md-7 col-12">
+                            <h2 class="mb-2 fw-bold" style="font-size: clamp(1.5rem, 3vw, 2.2rem);">
+                                Welcome back, {{ Auth::user()->name }}! 👋
+                            </h2>
+                            <p class="mb-2 opacity-75" style="font-size: 0.95rem;">
+                                Here's a quick snapshot of how your flower shop is doing right now.
+                            </p>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <span class="badge bg-light text-dark px-3 py-2" style="border-radius: 999px; font-size: 0.8rem;">
+                                    <i class="bi bi-cart-check me-1"></i>
+                                    {{ $stats['pending_orders'] }} pending orders
+                                </span>
+                                <span class="badge bg-light text-dark px-3 py-2" style="border-radius: 999px; font-size: 0.8rem;">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    {{ $stats['pending_bookings'] }} event bookings to review
+                                </span>
+                                <span class="badge bg-light text-dark px-3 py-2" style="border-radius: 999px; font-size: 0.8rem;">
+                                    <i class="bi bi-chat-dots me-1"></i>
+                                    {{ $stats['open_chats'] }} open chats
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-md-4 text-end">
-                            <div class="d-none d-md-block">
-                                <i class="bi bi-seedling fa-3x opacity-50"></i>
+                        <div class="col-lg-4 col-md-5 col-12 text-md-end text-start mt-3 mt-md-0">
+                            <div class="d-flex justify-content-md-end justify-content-start align-items-center h-100">
+                                <div class="text-md-end text-start">
+                                    <div class="small opacity-75 mb-2">
+                                        <i class="bi bi-clock-history me-1"></i>
+                                        Updated {{ now()->format('M d, Y g:i A') }}
+                                    </div>
+                                    <i class="bi bi-seedling" style="font-size: clamp(2.5rem, 4vw, 3.5rem); opacity: 0.5;"></i>
+                                </div>
                             </div>
                         </div>
                     </div>

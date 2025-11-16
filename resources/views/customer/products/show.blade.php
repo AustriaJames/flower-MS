@@ -1,5 +1,41 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.rating-input input[type="radio"] {
+    display: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+
+.rating-input input[type="radio"]:checked ~ label i {
+    font-weight: 900;
+}
+
+.rating-input label i {
+    transition: all 0.2s;
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container py-5">
     <div class="row">
@@ -7,8 +43,8 @@
         <div class="col-lg-6 mb-4">
             <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
                 <div class="product-image" style="height: 400px; background: #F0F2F5; display: flex; align-items: center; justify-content: center;">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
+                    @if($product->main_image)
+                        <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
                     @else
                         <i class="fas fa-flower-tulip" style="font-size: 8rem; color: #CFB8BE;"></i>
                     @endif
@@ -119,6 +155,11 @@
                         <div class="tab-pane fade" id="reviews" role="tabpanel">
                             @auth
                             <!-- Add Review Form -->
+                            @php
+                                $userHasReviewed = $product->reviews->where('user_id', auth()->id())->count() > 0;
+                            @endphp
+                            
+                            @if(!$userHasReviewed)
                             <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
                                 <div class="card-body">
                                     <h6 class="fw-semibold mb-3" style="color: #5D2B4C;">Write a Review</h6>
@@ -147,6 +188,11 @@
                                     </form>
                                 </div>
                             </div>
+                            @else
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>You have already reviewed this product.
+                            </div>
+                            @endif
                             @endauth
 
                             <!-- Reviews List -->
@@ -193,8 +239,8 @@
                         <div class="card-body p-4">
                             <div class="text-center mb-3">
                                 <div class="product-image bg-light rounded p-3 mb-3" style="height: 150px; display: flex; align-items: center; justify-content: center;">
-                                    @if($relatedProduct->image)
-                                        <img src="{{ asset('storage/' . $relatedProduct->image) }}" alt="{{ $relatedProduct->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
+                                    @if($relatedProduct->main_image)
+                                        <img src="{{ $relatedProduct->main_image_url }}" alt="{{ $relatedProduct->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
                                     @else
                                         <i class="fas fa-flower-tulip" style="font-size: 3rem; color: #CFB8BE;"></i>
                                     @endif
@@ -276,11 +322,22 @@ function addToCart() {
             success: function(data) {
                 console.log('Add to cart success:', data);
                 if (data.success) {
-                    alert('Product added to cart successfully!');
-                    // Reload page to update cart count
-                    location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Cart',
+                        text: 'Product added to cart successfully!',
+                        confirmButtonColor: '#5D2B4C'
+                    }).then(() => {
+                        // Reload page to update cart count
+                        location.reload();
+                    });
                 } else {
-                    alert('Error adding product to cart: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Add to Cart Failed',
+                        text: data.message || 'Error adding product to cart. Please try again.',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -288,15 +345,21 @@ function addToCart() {
                 console.error('Status:', status);
                 console.error('Error:', error);
 
+                let message = 'Error adding product to cart. Please try again.';
                 if (xhr.status === 404) {
-                    alert('Product not found. Please refresh the page.');
+                    message = 'Product not found. Please refresh the page.';
                 } else if (xhr.status === 403) {
-                    alert('Access denied. Please log in again.');
+                    message = 'Access denied. Please log in again.';
                 } else if (xhr.status === 500) {
-                    alert('Server error occurred. Please try again.');
-                } else {
-                    alert('Error adding product to cart. Please try again.');
+                    message = 'Server error occurred. Please try again.';
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Add to Cart Failed',
+                    text: message,
+                    confirmButtonColor: '#5D2B4C'
+                });
             }
         });
     @endguest
@@ -320,9 +383,19 @@ function addToWishlist() {
             success: function(data) {
                 console.log('Add to wishlist success:', data);
                 if (data.success) {
-                    alert('Product added to wishlist!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Wishlist',
+                        text: 'Product added to wishlist!',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 } else {
-                    alert('Error adding product to wishlist: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wishlist Failed',
+                        text: data.message || 'Error adding product to wishlist. Please try again.',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -330,15 +403,21 @@ function addToWishlist() {
                 console.error('Status:', status);
                 console.error('Error:', error);
 
+                let message = 'Error adding product to wishlist. Please try again.';
                 if (xhr.status === 404) {
-                    alert('Product not found. Please refresh the page.');
+                    message = 'Product not found. Please refresh the page.';
                 } else if (xhr.status === 403) {
-                    alert('Access denied. Please log in again.');
+                    message = 'Access denied. Please log in again.';
                 } else if (xhr.status === 500) {
-                    alert('Server error occurred. Please try again.');
-                } else {
-                    alert('Error adding product to wishlist. Please try again.');
+                    message = 'Server error occurred. Please try again.';
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wishlist Failed',
+                    text: message,
+                    confirmButtonColor: '#5D2B4C'
+                });
             }
         });
     @endguest
@@ -353,8 +432,22 @@ function shareProduct() {
         });
     } else {
         // Fallback for browsers that don't support Web Share API
-        navigator.clipboard.writeText(window.location.href);
-        alert('Product link copied to clipboard!');
+        navigator.clipboard.writeText(window.location.href).then(function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Link Copied',
+                text: 'Product link copied to clipboard!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }).catch(function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Copy Failed',
+                text: 'Could not copy the product link. Please try again.',
+                confirmButtonColor: '#5D2B4C'
+            });
+        });
     }
 }
 </script>

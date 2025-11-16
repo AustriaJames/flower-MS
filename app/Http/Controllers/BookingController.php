@@ -8,9 +8,17 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\PhpMailerService;
 
 class BookingController extends Controller
 {
+    protected PhpMailerService $mailer;
+
+    public function __construct(PhpMailerService $mailer)
+    {
+        $this->middleware('auth');
+        $this->mailer = $mailer;
+    }
     public function index()
     {
         $bookings = Booking::where('user_id', Auth::id())
@@ -47,8 +55,13 @@ class BookingController extends Controller
             'products.*.quantity' => 'integer|min:1'
         ]);
 
+        $user = Auth::user();
+        
         $booking = Booking::create([
             'user_id' => Auth::id(),
+            'customer_name' => $user->first_name . ' ' . $user->last_name,
+            'customer_email' => $user->email,
+            'customer_phone' => $user->phone ?? $request->contact_phone,
             'event_type' => $request->event_type,
             'event_date' => $request->event_date,
             'event_time' => $request->event_time,
@@ -69,6 +82,11 @@ class BookingController extends Controller
                     'quantity' => $productData['quantity']
                 ]);
             }
+        }
+
+        // Send booking creation email
+        if ($booking->customer_email) {
+            $this->sendBookingCreatedEmail($booking);
         }
 
         return redirect()->route('bookings.show', $booking)
@@ -128,5 +146,20 @@ class BookingController extends Controller
 
         return redirect()->route('bookings.index')
             ->with('success', 'Booking cancelled successfully!');
+    }
+
+    private function sendBookingCreatedEmail(Booking $booking): void
+    {
+        $subject = 'Booking Received - ' . config('app.name');
+        $htmlBody = view('emails.bookings.created', [
+            'booking' => $booking,
+        ])->render();
+
+        $this->mailer->send(
+            $booking->customer_email,
+            $booking->customer_name ?? ($booking->user->first_name . ' ' . $booking->user->last_name ?? ''),
+            $subject,
+            $htmlBody
+        );
     }
 }

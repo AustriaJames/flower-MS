@@ -80,10 +80,38 @@ class Category extends Model
     }
 
     /**
-     * Scope a query to only include regular categories.
+     * Scope a query to only include regular categories (not occasions).
      */
     public function scopeRegular($query)
     {
         return $query->where('is_occasion', false);
+    }
+
+    /**
+     * Get the full URL for the category image.
+     */
+    public function getImageUrlAttribute()
+    {
+        if (!$this->image) {
+            return asset('images/placeholder-category.svg');
+        }
+
+        // If it's already a full URL, return as is
+        if (str_starts_with($this->image, 'http')) {
+            return $this->image;
+        }
+
+        // If it starts with /, it's a local path
+        if (str_starts_with($this->image, '/')) {
+            return asset($this->image);
+        }
+
+        // If it contains 'categories/', it's from storage
+        if (str_contains($this->image, 'categories/')) {
+            return asset('storage/' . $this->image);
+        }
+
+        // Otherwise, assume it's in uploads/categories
+        return asset('uploads/categories/' . $this->image);
     }
 }

@@ -135,29 +135,6 @@
                                        class="btn-action btn-warning" title="Edit Order">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <button type="button" class="btn-action btn-primary dropdown-toggle"
-                                            data-bs-toggle="dropdown" title="Quick Actions">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        @foreach(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'] as $status)
-                                            @if($status !== $order->status)
-                                                <li>
-                                                    <button type="button" class="dropdown-item"
-                                                            onclick="updateOrderStatus({{ $order->id }}, '{{ $status }}')">
-                                                        Mark as {{ ucfirst($status) }}
-                                                    </button>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <button type="button" class="dropdown-item text-danger"
-                                                    onclick="deleteOrder({{ $order->id }})">
-                                                <i class="bi bi-trash"></i> Delete Order
-                                            </button>
-                                        </li>
-                                    </ul>
                                 </div>
                             </td>
                         </tr>

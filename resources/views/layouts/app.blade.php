@@ -16,6 +16,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
@@ -24,12 +27,15 @@
 
         <style>
         /* Floating Chat Widget Styles */
+        *{
+            font-family: 'Poppins', sans-serif;
+        }
         .floating-chat-widget {
             position: fixed;
             bottom: 30px;
             right: 30px;
             z-index: 9999;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         /* Ensure scroll-to-top button doesn't overlap */
@@ -272,15 +278,67 @@
                         <div class="d-flex align-items-center justify-content-end">
                             @guest
                                 <span class="text-white me-3 small">Welcome to Bona's Flower Shop</span>
-                                <button class="btn btn-sm text-white border-white" style="background: transparent;" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <a href="{{ route('login') }}" class="btn btn-sm text-white border-white me-2" style="background: transparent;">
                                     <i class="fas fa-sign-in-alt me-1"></i>Login
-                                </button>
+                                </a>
+                                <a href="{{ route('register.show') }}" class="btn btn-sm text-white" style="background: #CFB8BE; border-radius: 20px; border: none;">
+                                    <i class="fas fa-user-plus me-1"></i>Sign Up
+                                </a>
                             @else
                                 <span class="text-white me-3 small">Welcome, {{ Auth::user()->name }}</span>
                                 <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-white text-decoration-none small">Logout</a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
                             @endguest
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forgot Password Modal -->
+        <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="modal-header border-0 pb-0" style="background: #F5EEE4;">
+                        <h5 class="modal-title fw-bold" id="forgotPasswordModalLabel" style="color: #5D2B4C;">Forgot Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <p class="mb-4 text-muted text-center">
+                            Enter your email address and we will send you a link to reset your password.
+                        </p>
+
+                        <form method="POST" action="{{ route('password.email') }}">
+                            @csrf
+
+                            <div class="mb-3">
+                                <label for="forgot_email" class="form-label fw-semibold" style="color: #5D2B4C;">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text border-0" style="background: #F5EEE4;">
+                                        <i class="fas fa-envelope" style="color: #5D2B4C;"></i>
+                                    </span>
+                                    <input type="email" class="form-control border-0 @error('email') is-invalid @enderror"
+                                           id="forgot_email" name="email" value="{{ old('email') }}" required autocomplete="email"
+                                           style="background: #F5EEE4; color: #5D2B4C;" placeholder="Enter your email">
+                                </div>
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn fw-semibold text-white" style="background: #5D2B4C; border-radius: 12px; padding: 12px;">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Reset Link
+                                </button>
+                            </div>
+
+                            <div class="text-center">
+                                <span style="color: #5D2B4C;">Remembered your password? </span>
+                                <a href="javascript:void(0)" class="text-decoration-none" style="color: #5D2B4C;" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Back to Login</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -298,7 +356,7 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
+                    <ul class="navbar-nav ms-3 me-auto align-items-lg-center">
                         <li class="nav-item">
                             <a class="nav-link fw-semibold" href="{{ route('home') }}" style="color: #5D2B4C;">
                                 <i class="fas fa-home me-1"></i>Home
@@ -319,7 +377,11 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('occasions.index') }}">All Occasions</a></li>
-                                <li><a class="dropdown-item" href="{{ route('bookings.create') }}">Book Event</a></li>
+                                @auth
+                                    <li><a class="dropdown-item" href="{{ route('bookings.create') }}">Book Event</a></li>
+                                @else
+                                    <li><a class="dropdown-item" href="{{ route('login') }}">Book Event</a></li>
+                                @endauth
                             </ul>
                         </li>
                         @auth
@@ -383,9 +445,9 @@
                                 </div>
                             @else
                                 <!-- Guest User Buttons -->
-                                <button class="btn me-2" style="background: #5D2B4C; color: white; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#loginModal" title="Login to access cart">
+                                <a href="{{ route('login') }}" class="btn me-2" style="background: #5D2B4C; color: white; border-radius: 8px;" title="Login to access cart">
                                     <i class="fas fa-shopping-cart me-1"></i>Cart
-                                </button>
+                                </a>
                             @endauth
 
                             <!-- Track Button (Always Visible) -->
@@ -431,26 +493,6 @@
                     <div class="flex-grow-1">
                         <strong>Error!</strong><br>
                         {{ session('error') }}
-                    </div>
-                    <button type="button" class="btn-close ms-2" data-bs-dismiss="alert"></button>
-                </div>
-            </div>
-        @endif
-
-                @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show position-fixed"
-                 style="top: 20px; right: 20px; z-index: 9999; min-width: 350px; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: none; border-radius: 12px;"
-                 id="validationAlert">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-exclamation-triangle me-3" style="font-size: 1.2rem;"></i>
-                    <div class="flex-grow-1">
-                        <strong>Validation Error!</strong><br>
-                        Please fix the following errors:
-                        <ul class="mb-0 mt-2 small">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
                     </div>
                     <button type="button" class="btn-close ms-2" data-bs-dismiss="alert"></button>
                 </div>
@@ -608,132 +650,7 @@
             <i class="fas fa-arrow-up"></i>
         </button>
 
-        <!-- Login Modal -->
-        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-                    <div class="modal-header border-0 pb-0" style="background: #F5EEE4;">
-                        <h5 class="modal-title fw-bold" id="loginModalLabel" style="color: #5D2B4C;">Welcome Back</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <form method="POST" action="{{ route('login') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="email" class="form-label fw-semibold" style="color: #5D2B4C;">Email Address</label>
-                                <div class="input-group">
-                                    <span class="input-group-text border-0" style="background: #F5EEE4;">
-                                        <i class="fas fa-envelope" style="color: #5D2B4C;"></i>
-                                    </span>
-                                    <input type="email" class="form-control border-0 @error('email') is-invalid @enderror"
-                                           id="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus
-                                           style="background: #F5EEE4; color: #5D2B4C;" placeholder="Enter your email">
-                                </div>
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="password" class="form-label fw-semibold" style="color: #5D2B4C;">Password</label>
-                                <div class="input-group">
-                                    <span class="input-group-text border-0" style="background: #F5EEE4;">
-                                        <i class="fas fa-lock" style="color: #5D2B4C;"></i>
-                                    </span>
-                                    <input type="password" class="form-control border-0 @error('password') is-invalid @enderror"
-                                           id="password" name="password" required autocomplete="current-password"
-                                           style="background: #F5EEE4; color: #5D2B4C;" placeholder="Enter your password">
-                                </div>
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3 form-check">
-                                <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="remember" style="color: #5D2B4C;">
-                                    Remember Me
-                                </label>
-                            </div>
-
-                            <div class="d-grid mb-3">
-                                <button type="submit" class="btn fw-semibold text-white" style="background: #5D2B4C; border-radius: 12px; padding: 12px;">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
-                                </button>
-                            </div>
-
-                            <div class="text-center">
-                                <a href="{{ route('password.request') }}" class="text-decoration-none" style="color: #5D2B4C;">Forgot your password?</a>
-                                <br>
-                                <span style="color: #5D2B4C;">Don't have an account? </span>
-                                <a href="#" class="text-decoration-none" style="color: #5D2B4C;" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Sign Up</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Register Modal -->
-        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-                    <div class="modal-header border-0 pb-0" style="background: #F5EEE4;">
-                        <h5 class="modal-title fw-bold" id="registerModalLabel" style="color: #5D2B4C;">Create Account</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <form method="POST" action="{{ route('register') }}">
-                            @csrf
-
-                            <!-- First Name -->
-                            <div class="mb-3">
-                                <label for="first_name" class="form-label fw-semibold" style="color: #5D2B4C;">First Name <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text border-0" style="background: #F5EEE4; color: #5D2B4C;">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <input id="first_name" type="text" class="form-control border-0 @error('first_name') is-invalid @enderror" name="first_name" value="{{ old('first_name') }}" required autocomplete="given-name" style="background: #F5EEE4; color: #5D2B4C;" placeholder="Enter your first name" minlength="2" maxlength="50" pattern="[a-zA-Z\s]+" title="First name can only contain letters and spaces (2-50 characters)">
-                                </div>
-                                <small class="form-text text-muted">Minimum 2 characters, letters and spaces only</small>
-                                @error('first_name')
-                                    <span class="invalid-feedback d-block" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
-                            <!-- Middle Name -->
-                            <div class="mb-3">
-                                <label for="middle_name" class="form-label fw-semibold" style="color: #5D2B4C;">Middle Name <small class="text-muted">(Optional)</small></label>
-                                <div class="input-group">
-                                    <span class="input-group-text border-0" style="background: #F5EEE4; color: #5D2B4C;">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <input id="middle_name" type="text" class="form-control border-0 @error('middle_name') is-invalid @enderror" name="middle_name" value="{{ old('middle_name') }}" autocomplete="additional-name" style="background: #F5EEE4; color: #5D2B4C;" placeholder="Enter your middle name" minlength="2" maxlength="50" pattern="[a-zA-Z\s]+" title="Middle name can only contain letters and spaces (2-50 characters)">
-                                </div>
-                                <small class="form-text text-muted">Optional: 2-50 characters, letters and spaces only</small>
-                                @error('middle_name')
-                                    <span class="invalid-feedback d-block" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-
-                            <!-- Last Name -->
-                            <div class="mb-3">
-                                <label for="last_name" class="form-label fw-semibold" style="color: #5D2B4C;">Last Name <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text border-0" style="background: #F5EEE4; color: #5D2B4C;">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <input id="last_name" type="text" class="form-control border-0 @error('last_name') is-invalid @enderror" name="last_name" value="{{ old('last_name') }}" required autocomplete="family-name" style="background: #F5EEE4; color: #5D2B4C;" placeholder="Enter your last name" minlength="2" maxlength="50" pattern="[a-zA-Z\s]+" title="Last name can only contain letters and spaces (2-50 characters)">
-                                </div>
-                                <small class="form-text text-muted">Minimum 2 characters, letters and spaces only</small>
+        <style>
                                 @error('last_name')
                                     <span class="invalid-feedback d-block" role="alert">
                                         <strong>{{ $message }}</strong>

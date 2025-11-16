@@ -6,13 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\BookingConfirmation;
-use App\Mail\BookingRescheduled;
-use App\Mail\BookingCancelled;
+use App\Services\PhpMailerService;
 
 class BookingController extends Controller
 {
+    /**
+     * @var PhpMailerService
+     */
+    protected PhpMailerService $mailer;
+
+    public function __construct(PhpMailerService $mailer)
+    {
+        $this->mailer = $mailer;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -53,15 +59,15 @@ class BookingController extends Controller
             ->map(function ($booking) {
                 return [
                     'id' => $booking->id,
-                    'title' => $booking->customer_name . ' - ' . ucfirst($booking->event_type),
+                    'title' => ($booking->customer_name ?? ($booking->user ? $booking->user->first_name . ' ' . $booking->user->last_name : 'Guest')) . ' - ' . ucfirst($booking->event_type),
                     'start' => $booking->event_date,
                     'end' => $booking->event_date,
                     'className' => 'booking-' . $booking->status,
                     'extendedProps' => [
                         'status' => $booking->status,
-                        'customer' => $booking->customer_name,
+                        'customer' => $booking->customer_name ?? ($booking->user ? $booking->user->first_name . ' ' . $booking->user->last_name : 'Guest'),
                         'event_type' => $booking->event_type,
-                        'requirements' => $booking->requirements
+                        'requirements' => $booking->special_requirements ?? $booking->requirements
                     ]
                 ];
             });
@@ -95,14 +101,14 @@ class BookingController extends Controller
     public function update(Request $request, Booking $booking)
     {
         $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'required|string|max:20',
             'event_type' => 'required|string|in:wedding,birthday,anniversary,graduation,funeral,corporate,other',
             'event_date' => 'required|date|after:today',
             'event_time' => 'required|string|max:10',
-            'venue' => 'nullable|string|max:500',
-            'requirements' => 'nullable|string|max:1000',
+            'guest_count' => 'nullable|integer|min:1|max:1000',
+            'venue_address' => 'nullable|string|max:500',
+            'contact_person' => 'nullable|string|max:100',
+            'contact_phone' => 'nullable|string|max:20',
+            'special_requirements' => 'nullable|string|max:1000',
             'budget_range' => 'nullable|string|max:100',
             'status' => 'required|string|in:pending,confirmed,rescheduled,cancelled,completed',
             'admin_notes' => 'nullable|string|max:1000',
@@ -190,8 +196,10 @@ class BookingController extends Controller
             'admin_notes' => $request->reason ? "Cancelled: {$request->reason}" : 'Cancelled by admin',
         ]);
 
-        // Send cancellation notification
-        Mail::to($booking->customer_email)->send(new BookingCancelled($booking));
+        // Send cancellation notification via PHPMailer
+        if ($booking->customer_email) {
+            $this->sendCancellationEmail($booking);
+        }
 
         return redirect()->back()->with('success', 'Booking cancelled successfully.');
     }
@@ -240,21 +248,24 @@ class BookingController extends Controller
 
             // Add headers
             fputcsv($file, [
-                'ID', 'Customer Name', 'Email', 'Phone', 'Event Type', 'Event Date',
-                'Event Time', 'Venue', 'Status', 'Budget Range', 'Created At'
+                'ID', 'Customer Name', 'Customer Email', 'Event Type', 'Event Date',
+                'Event Time', 'Venue Address', 'Contact Person', 'Contact Phone', 
+                'Guest Count', 'Status', 'Budget Range', 'Created At'
             ]);
 
             // Add data
             foreach ($bookings as $booking) {
                 fputcsv($file, [
                     $booking->id,
-                    $booking->customer_name,
-                    $booking->customer_email,
-                    $booking->customer_phone,
+                    $booking->customer_name ?? ($booking->user ? $booking->user->first_name . ' ' . $booking->user->last_name : 'Guest'),
+                    $booking->customer_email ?? ($booking->user ? $booking->user->email : ''),
                     $booking->event_type,
                     $booking->event_date->format('Y-m-d'),
                     $booking->event_time,
-                    $booking->venue,
+                    $booking->venue_address ?? $booking->venue,
+                    $booking->contact_person,
+                    $booking->contact_phone,
+                    $booking->guest_count,
                     $booking->status,
                     $booking->budget_range,
                     $booking->created_at->format('Y-m-d H:i:s'),
@@ -272,12 +283,16 @@ class BookingController extends Controller
      */
     private function sendStatusNotification($booking, $oldStatus)
     {
+        if (!$booking->customer_email) {
+            return; // Skip if no customer email
+        }
+
         switch ($booking->status) {
             case 'confirmed':
-                Mail::to($booking->customer_email)->send(new BookingConfirmation($booking));
+                $this->sendConfirmationEmail($booking);
                 break;
             case 'cancelled':
-                Mail::to($booking->customer_email)->send(new BookingCancelled($booking));
+                $this->sendCancellationEmail($booking);
                 break;
         }
     }
@@ -287,6 +302,62 @@ class BookingController extends Controller
      */
     private function sendRescheduleNotification($booking)
     {
-        Mail::to($booking->customer_email)->send(new BookingRescheduled($booking));
+        if ($booking->customer_email) {
+            $this->sendRescheduledEmail($booking);
+        }
+    }
+
+    /**
+     * Send booking confirmation email via PHPMailer.
+     */
+    private function sendConfirmationEmail(Booking $booking): void
+    {
+        $subject = 'Booking Confirmed - ' . config('app.name');
+        $htmlBody = view('emails.bookings.confirmation', [
+            'booking' => $booking,
+        ])->render();
+
+        $this->mailer->send(
+            $booking->customer_email,
+            $booking->customer_name ?? ($booking->user->first_name . ' ' . $booking->user->last_name ?? ''),
+            $subject,
+            $htmlBody
+        );
+    }
+
+    /**
+     * Send booking cancellation email via PHPMailer.
+     */
+    private function sendCancellationEmail(Booking $booking): void
+    {
+        $subject = 'Booking Cancelled - ' . config('app.name');
+        $htmlBody = view('emails.bookings.cancelled', [
+            'booking' => $booking,
+        ])->render();
+
+        $this->mailer->send(
+            $booking->customer_email,
+            $booking->customer_name ?? ($booking->user->first_name . ' ' . $booking->user->last_name ?? ''),
+            $subject,
+            $htmlBody
+        );
+    }
+
+    /**
+     * Send booking rescheduled email via PHPMailer.
+     */
+    private function sendRescheduledEmail(Booking $booking): void
+    {
+        $subject = 'Booking Rescheduled - ' . config('app.name');
+        $htmlBody = view('emails.bookings.rescheduled', [
+            'booking' => $booking,
+        ])->render();
+
+        $this->mailer->send(
+            $booking->customer_email,
+            $booking->customer_name ?? ($booking->user->first_name . ' ' . $booking->user->last_name ?? ''),
+            $subject,
+            $htmlBody
+        );
     }
 }

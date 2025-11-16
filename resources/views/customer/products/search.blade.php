@@ -24,8 +24,8 @@
                         <div class="card-body p-4">
                             <div class="text-center mb-3">
                                 <div class="product-image bg-light rounded p-4 mb-3" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                                    @if($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
+                                    @if($product->main_image)
+                                        <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
                                     @else
                                         <i class="fas fa-flower-tulip" style="font-size: 4rem; color: #CFB8BE;"></i>
                                     @endif
@@ -113,10 +113,21 @@ function addToCart(productId) {
             success: function(data) {
                 console.log('Add to cart success:', data);
                 if (data.success) {
-                    alert('Product added to cart successfully!');
-                    location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Cart',
+                        text: 'Product added to cart successfully!',
+                        confirmButtonColor: '#5D2B4C'
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
-                    alert('Error adding product to cart: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Add to Cart Failed',
+                        text: data.message || 'Error adding product to cart. Please try again.',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -124,15 +135,21 @@ function addToCart(productId) {
                 console.error('Status:', status);
                 console.error('Error:', error);
 
+                let message = 'Error adding product to cart. Please try again.';
                 if (xhr.status === 404) {
-                    alert('Product not found. Please refresh the page.');
+                    message = 'Product not found. Please refresh the page.';
                 } else if (xhr.status === 403) {
-                    alert('Access denied. Please log in again.');
+                    message = 'Access denied. Please log in again.';
                 } else if (xhr.status === 500) {
-                    alert('Server error occurred. Please try again.');
-                } else {
-                    alert('Error adding product to cart. Please try again.');
+                    message = 'Server error occurred. Please try again.';
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Add to Cart Failed',
+                    text: message,
+                    confirmButtonColor: '#5D2B4C'
+                });
             }
         });
     @endguest
@@ -156,9 +173,19 @@ function addToWishlist(productId) {
             success: function(data) {
                 console.log('Add to wishlist success:', data);
                 if (data.success) {
-                    alert('Product added to wishlist!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Wishlist',
+                        text: 'Product added to wishlist!',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 } else {
-                    alert('Error adding product to wishlist: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wishlist Failed',
+                        text: data.message || 'Error adding product to wishlist. Please try again.',
+                        confirmButtonColor: '#5D2B4C'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -166,15 +193,21 @@ function addToWishlist(productId) {
                 console.error('Status:', status);
                 console.error('Error:', error);
 
+                let message = 'Error adding product to wishlist. Please try again.';
                 if (xhr.status === 404) {
-                    alert('Product not found. Please refresh the page.');
+                    message = 'Product not found. Please refresh the page.';
                 } else if (xhr.status === 403) {
-                    alert('Access denied. Please log in again.');
+                    message = 'Access denied. Please log in again.';
                 } else if (xhr.status === 500) {
-                    alert('Server error occurred. Please try again.');
-                } else {
-                    alert('Error adding product to wishlist. Please try again.');
+                    message = 'Server error occurred. Please try again.';
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wishlist Failed',
+                    text: message,
+                    confirmButtonColor: '#5D2B4C'
+                });
             }
         });
     @endguest

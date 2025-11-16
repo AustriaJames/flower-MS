@@ -89,8 +89,8 @@
                         <div class="card-body p-4">
                             <div class="text-center mb-3">
                                 <div class="product-image bg-light rounded p-4 mb-3" style="height: 200px; display: flex; align-items: center; justify-content: center;">
-                                    @if($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
+                                    @if($product->main_image)
+                                        <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
                                     @else
                                         <i class="fas fa-flower-tulip" style="font-size: 4rem; color: #CFB8BE;"></i>
                                     @endif

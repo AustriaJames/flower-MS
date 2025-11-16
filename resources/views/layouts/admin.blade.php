@@ -150,11 +150,9 @@
             border: none;
         }
 
-        .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
             background: rgba(255, 255, 255, 0.15);
             color: white !important;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar .nav-link i {
@@ -208,11 +206,11 @@
         }
 
         .btn-action:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            /* No animation */
         }
 
         .btn-action:active {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /* No animation */
         }
 
         .btn-action-sm {
@@ -239,11 +237,7 @@
             box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
         }
 
-        .btn-primary:hover {
-            background: #2563eb;
-            border-color: #2563eb;
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-        }
+        /* No hover effects */
 
         .btn-success {
             background: var(--success-color);
@@ -252,11 +246,7 @@
             box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
         }
 
-        .btn-success:hover {
-            background: #059669;
-            border-color: #059669;
-            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
-        }
+        /* No hover effects */
 
         .btn-warning {
             background: var(--warning-color);
@@ -265,11 +255,7 @@
             box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
         }
 
-        .btn-warning:hover {
-            background: #d97706;
-            border-color: #d97706;
-            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
-        }
+        /* No hover effects */
 
         .btn-danger {
             background: var(--danger-color);
@@ -278,11 +264,7 @@
             box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
         }
 
-        .btn-danger:hover {
-            background: #dc2626;
-            border-color: #dc2626;
-            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
-        }
+        /* No hover effects */
 
         .btn-info {
             background: var(--info-color);
@@ -291,11 +273,7 @@
             box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
         }
 
-        .btn-info:hover {
-            background: #0891b2;
-            border-color: #0891b2;
-            box-shadow: 0 4px 8px rgba(6, 182, 212, 0.3);
-        }
+        /* No hover effects */
 
         .btn-secondary {
             background: var(--secondary-color);
@@ -304,11 +282,7 @@
             box-shadow: 0 2px 4px rgba(100, 116, 139, 0.2);
         }
 
-        .btn-secondary:hover {
-            background: #475569;
-            border-color: #475569;
-            box-shadow: 0 4px 8px rgba(100, 116, 139, 0.3);
-        }
+        /* No hover effects */
 
         /* Outline button variants for better contrast */
         .btn-outline-primary {
@@ -318,11 +292,7 @@
             font-weight: 600;
         }
 
-        .btn-outline-primary:hover {
-            background: var(--primary-color);
-            color: white;
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-        }
+        /* No hover effects */
 
         .btn-outline-warning {
             color: var(--warning-color);
@@ -331,11 +301,7 @@
             font-weight: 600;
         }
 
-        .btn-outline-warning:hover {
-            background: var(--warning-color);
-            color: white;
-            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
-        }
+        /* No hover effects */
 
         /* Enhanced form buttons */
         .btn {
@@ -348,11 +314,11 @@
         }
 
         .btn:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            /* No animation */
         }
 
         .btn:active {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            /* No animation */
         }
 
         .btn-sm {
@@ -393,13 +359,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .quick-action-btn:hover {
-            background: #e2e8f0;
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-        }
+        /* No hover effects */
 
         /* Enhanced DataTables buttons */
         .dt-button {
@@ -414,10 +374,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
 
-        .dt-button:hover {
-            background: #2563eb !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-        }
+        /* No hover effects */
 
         /* Enhanced search and filter buttons */
         .search-btn {
@@ -430,10 +387,7 @@
             box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
         }
 
-        .search-btn:hover {
-            background: #2563eb;
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-        }
+        /* No hover effects */
 
         /* Enhanced dropdown buttons */
         .dropdown-toggle::after {
@@ -448,15 +402,7 @@
             margin: 2px 8px;
         }
 
-        .dropdown-item:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .dropdown-item.text-danger:hover {
-            background: var(--danger-color);
-            color: white;
-        }
+        /* No hover effects */
 
         /* Enhanced modal buttons */
         .modal-footer .btn {
@@ -501,7 +447,7 @@
         .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
-            transform: none;
+            /* No animation */
         }
 
         .form-control,
@@ -568,9 +514,7 @@
             font-size: 14px;
         }
 
-        .table tbody tr:hover {
-            background-color: rgba(59, 130, 246, 0.02);
-        }
+        /* No hover effects */
 
         /* Enhanced search and filter section */
         .search-filters {
@@ -591,6 +535,7 @@
         .search-filters .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+            /* No animation */
         }
 
         /* Enhanced page header */
@@ -888,9 +833,7 @@
             text-decoration: none;
         }
 
-        .breadcrumb-item a:hover {
-            color: #2563eb;
-        }
+        /* No hover effects */
 
         .breadcrumb-item.active {
             color: #64748b;
@@ -972,20 +915,14 @@
             cursor: pointer;
         }
 
-        .dropdown-item:hover {
-            color: #1e2125;
-            background-color: #f8f9fa;
-        }
+        /* No hover effects */
 
         /* Special styling for logout button */
         .dropdown-item.text-danger {
             color: #dc3545 !important;
         }
 
-        .dropdown-item.text-danger:hover {
-            color: #ffffff !important;
-            background-color: #dc3545 !important;
-        }
+        /* No hover effects */
 
         /* Ensure button text is visible in dropdown */
         .dropdown-item button {
@@ -1107,6 +1044,72 @@
         ::-webkit-scrollbar {
             display: none;
         }
+
+        /* Disable all animations and transitions globally except modals */
+        *:not(.modal):not(.modal *):not(.modal-backdrop), *:not(.modal):not(.modal *):not(.modal-backdrop)::before, *:not(.modal):not(.modal *):not(.modal-backdrop)::after {
+            animation-duration: 0s !important;
+            animation-delay: 0s !important;
+            transition-duration: 0s !important;
+            transition-delay: 0s !important;
+        }
+
+        /* Completely disable all hover effects except modals */
+        *:not(.modal):not(.modal *):hover {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        /* Disable Bootstrap animations except modals */
+        .fade:not(.modal):not(.modal-backdrop) {
+            opacity: 1 !important;
+        }
+        
+        .fade:not(.show):not(.modal):not(.modal-backdrop) {
+            opacity: 0 !important;
+        }
+        
+        .collapsing {
+            height: auto !important;
+        }
+        
+        /* Allow normal modal animations */
+        .modal.fade {
+            transition: opacity 0.15s linear;
+        }
+        
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+            transform: translate(0, -50px);
+        }
+        
+        .modal.fade.show .modal-dialog {
+            transform: none;
+        }
+        
+        /* Fix modal backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            transition: opacity 0.15s linear !important;
+        }
+        
+        .modal-backdrop.fade {
+            opacity: 0 !important;
+        }
+        
+        .modal-backdrop.fade.show {
+            opacity: 1 !important;
+        }
+        
+        .carousel-item {
+            transform: none !important;
+        }
+        
+        /* Disable loading spinner animation */
+        .btn-loading::after {
+            animation: none !important;
+        }
+        
+        /* All hover effects disabled */
 
         /* Hide scrollbar for IE, Edge and Firefox */
         html, body {
@@ -1302,6 +1305,14 @@
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
+            showClass: {
+                popup: '',
+                backdrop: ''
+            },
+            hideClass: {
+                popup: '',
+                backdrop: ''
+            },
             didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer)
                 toast.addEventListener('mouseleave', Swal.resumeTimer)

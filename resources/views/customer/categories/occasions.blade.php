@@ -17,7 +17,13 @@
                         <div class="card-body p-4">
                             <div class="row align-items-center">
                                 <div class="col-md-4 text-center">
-                                    <i class="bi bi-calendar-heart" style="font-size: clamp(2.5rem, 6vw, 3rem); color: #5D2B4C;"></i>
+                                    <div class="category-image" style="height: 120px; background: #F0F2F5; border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                        @if($category->image)
+                                            <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @else
+                                            <i class="bi bi-calendar-heart" style="font-size: 2.5rem; color: #CFB8BE;"></i>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="col-md-8">
                                     <h5 class="fw-bold" style="color: #5D2B4C;">{{ $category->name }}</h5>
@@ -27,9 +33,15 @@
                                         <a href="{{ route('products.byCategory', $category) }}" class="btn btn-outline-primary btn-sm" style="border-radius: 8px;">
                                             <i class="bi bi-eye me-1"></i>View Products
                                         </a>
-                                        <a href="{{ route('bookings.create') }}" class="btn fw-semibold text-white btn-sm" style="background: #5D2B4C; border-radius: 8px;">
-                                            <i class="bi bi-calendar-plus me-1"></i>Book Event
-                                        </a>
+                                        @auth
+                                            <a href="{{ route('bookings.create') }}" class="btn fw-semibold text-white btn-sm" style="background: #5D2B4C; border-radius: 8px;">
+                                                <i class="bi bi-calendar-plus me-1"></i>Book Event
+                                            </a>
+                                        @else
+                                            <a href="{{ route('login') }}" class="btn fw-semibold text-white btn-sm" style="background: #5D2B4C; border-radius: 8px;">
+                                                <i class="bi bi-calendar-plus me-1"></i>Book Event
+                                            </a>
+                                        @endauth
                                     </div>
                                 </div>
                             </div>
@@ -46,9 +58,15 @@
                         <div class="card-body p-5 text-center text-white">
                             <h3 class="fw-bold mb-3">Ready to Plan Your Special Event?</h3>
                             <p class="lead mb-4">Our expert florists are here to help you create the perfect floral arrangements for your special occasion.</p>
-                            <a href="{{ route('bookings.create') }}" class="btn btn-lg fw-semibold text-white border-white" style="background: transparent; border-radius: 12px; padding: 15px 30px;">
-                                <i class="bi bi-calendar-plus me-2"></i>Book Your Event Now
-                            </a>
+                            @auth
+                                <a href="{{ route('bookings.create') }}" class="btn btn-lg fw-semibold text-white border-white" style="background: transparent; border-radius: 12px; padding: 15px 30px;">
+                                    <i class="bi bi-calendar-plus me-2"></i>Book Your Event Now
+                                </a>
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-lg fw-semibold text-white border-white" style="background: transparent; border-radius: 12px; padding: 15px 30px;">
+                                    <i class="bi bi-calendar-plus me-2"></i>Book Your Event Now
+                                </a>
+                            @endauth
                         </div>
                     </div>
                 </div>

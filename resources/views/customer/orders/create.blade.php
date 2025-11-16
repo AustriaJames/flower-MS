@@ -249,8 +249,8 @@
                     @foreach($cartItems as $item)
                     <div class="d-flex align-items-center mb-3">
                         <div class="product-image bg-light rounded p-2 me-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                            @if($item->product->image)
-                                <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
+                            @if($item->product->main_image)
+                                <img src="{{ $item->product->main_image_url }}" alt="{{ $item->product->name }}" class="img-fluid" style="max-height: 100%; object-fit: cover;">
                             @else
                                 <i class="fas fa-flower-tulip" style="font-size: 1.5rem; color: #CFB8BE;"></i>
                             @endif

@@ -101,7 +101,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     @if($product->main_image)
-                                                        <img src="{{ asset('storage/' . $product->main_image) }}"
+                                                        <img src="{{ $product->main_image_url }}"
                                                              alt="{{ $product->name }}" class="rounded me-2"
                                                              style="width: 30px; height: 30px; object-fit: cover;">
                                                     @endif
@@ -163,7 +163,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     @if($product->main_image)
-                                                        <img src="{{ asset('storage/' . $product->main_image) }}"
+                                                        <img src="{{ $product->main_image_url }}"
                                                              alt="{{ $product->name }}" class="rounded me-2"
                                                              style="width: 30px; height: 30px; object-fit: cover;">
                                                     @endif

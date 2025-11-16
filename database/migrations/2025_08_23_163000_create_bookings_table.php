@@ -21,8 +21,13 @@ return new class extends Migration
             $table->enum('event_type', ['wedding', 'birthday', 'anniversary', 'graduation', 'funeral', 'corporate', 'other']);
             $table->date('event_date');
             $table->string('event_time');
-            $table->string('venue')->nullable();
-            $table->text('requirements')->nullable();
+            $table->integer('guest_count')->nullable();
+            $table->string('venue_address')->nullable();
+            $table->string('contact_person')->nullable();
+            $table->string('contact_phone')->nullable();
+            $table->text('special_requirements')->nullable();
+            $table->string('venue')->nullable(); // Keep for backward compatibility
+            $table->text('requirements')->nullable(); // Keep for backward compatibility
             $table->string('budget_range')->nullable();
             $table->enum('status', ['pending', 'confirmed', 'rescheduled', 'cancelled', 'completed'])->default('pending');
             $table->text('admin_notes')->nullable();

@@ -60,7 +60,7 @@
                                                     <i class="fas fa-eye me-1"></i>View
                                                 </a>
                                                 @if($booking->status === 'pending')
-                                                <a href="{{ route('bookings.edit', $booking) }}" class="btn btn-outline-secondary btn-sm me-2">
+                                                <a href="{{ route('bookings.show', $booking) }}" class="btn btn-outline-secondary btn-sm me-2">
                                                     <i class="fas fa-edit me-1"></i>Edit
                                                 </a>
                                                 <button class="btn btn-outline-danger btn-sm" onclick="cancelBooking({{ $booking->id }})">
@@ -187,28 +187,48 @@
 
 <script>
 function cancelBooking(bookingId) {
-    if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
-        fetch(`/bookings/${bookingId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Booking cancelled successfully.');
-                location.reload();
-            } else {
-                alert('Error cancelling booking: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error cancelling booking. Please try again.');
-        });
-    }
+    Swal.fire({
+        icon: 'warning',
+        title: 'Cancel Booking?',
+        text: 'Are you sure you want to cancel this booking? This action cannot be undone.',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, cancel it',
+        cancelButtonText: 'Keep booking'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/bookings/${bookingId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cancelled',
+                        text: 'Booking cancelled successfully.',
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error cancelling booking: ' + (data.message || 'Please try again.'),
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error cancelling booking. Please try again.',
+                });
+            });
+        }
+    });
 }
 </script>
 @endsection

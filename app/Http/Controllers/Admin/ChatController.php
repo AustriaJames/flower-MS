@@ -8,6 +8,7 @@ use App\Models\ChatMessage;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ChatController extends Controller
 {
@@ -231,6 +232,17 @@ class ChatController extends Controller
                 ->count(),
         ];
 
+        // Derived metrics used in the view (basic placeholders / computed values)
+        $stats['avg_response_time'] = 'N/A';
+        $stats['resolution_rate'] = $stats['total_chats'] > 0
+            ? round(($stats['resolved_chats'] / $stats['total_chats']) * 100, 1)
+            : 0;
+        $stats['satisfaction_score'] = 0; // Placeholder until explicit ratings are implemented
+        $stats['avg_messages_per_chat'] = $stats['total_chats'] > 0
+            ? round($stats['total_messages'] / $stats['total_chats'], 1)
+            : 0;
+        $stats['peak_hours'] = 'N/A';
+
         // Get recent activity
         $recentChats = Chat::with(['user', 'lastMessage'])
             ->latest()
@@ -244,6 +256,17 @@ class ChatController extends Controller
             ->orderBy('date')
             ->get();
 
-        return view('admin.chats.statistics', compact('stats', 'recentChats', 'chatVolume'));
+        $chatVolumeLabels = $chatVolume->pluck('date')->map(function ($date) {
+            return Carbon::parse($date)->format('M d');
+        });
+
+        $chatVolumeData = $chatVolume->pluck('count');
+
+        return view('admin.chats.statistics', [
+            'stats' => $stats,
+            'recentChats' => $recentChats,
+            'chatVolumeLabels' => $chatVolumeLabels,
+            'chatVolumeData' => $chatVolumeData,
+        ]);
     }
 }

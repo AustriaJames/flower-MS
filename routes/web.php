@@ -30,12 +30,23 @@ Route::get('/occasions', [CategoryController::class, 'customerOccasions'])->name
 // Search routes
 Route::get('/search', [ProductController::class, 'search'])->name('products.search');
 
-// Authentication routes (excluding login/register since they're handled via modals)
+// Authentication routes (excluding default login/register views)
 Auth::routes(['login' => false, 'register' => false]);
 
-// Custom authentication routes for modal forms
-Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
+// Custom authentication routes
+// GET /login is used by the auth middleware when redirecting guests
+Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+// POST /login handles the actual login attempt
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login.attempt');
+// Registration routes (full page)
+Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register.show');
 Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register'])->name('register');
+
+// Password reset routes
+Route::get('/password/reset', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [App\Http\Controllers\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Protected customer routes
 Route::middleware(['auth'])->group(function () {

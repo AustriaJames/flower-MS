@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Booking extends Model
 {
@@ -17,8 +18,13 @@ class Booking extends Model
         'event_type',
         'event_date',
         'event_time',
-        'venue',
-        'requirements',
+        'guest_count',
+        'venue_address',
+        'contact_person',
+        'contact_phone',
+        'special_requirements',
+        'venue', // Keep for backward compatibility
+        'requirements', // Keep for backward compatibility
         'budget_range',
         'status',
         'admin_notes',
@@ -45,6 +51,16 @@ class Booking extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the products associated with the booking.
+     */
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'booking_product')
+                    ->withPivot(['quantity', 'price'])
+                    ->withTimestamps();
     }
 
     /**

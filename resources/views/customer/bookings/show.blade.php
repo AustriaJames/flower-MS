@@ -207,9 +207,6 @@
             <!-- Action Buttons -->
             <div class="d-flex justify-content-center gap-3 mb-5">
                 @if($booking->status === 'pending')
-                <a href="{{ route('bookings.edit', $booking) }}" class="btn btn-outline-secondary px-4">
-                    <i class="fas fa-edit me-2"></i>Edit Booking
-                </a>
                 <button class="btn btn-outline-danger px-4" onclick="cancelBooking({{ $booking->id }})">
                     <i class="fas fa-times me-2"></i>Cancel Booking
                 </button>
@@ -289,54 +286,94 @@
 
 <script>
 function cancelBooking(bookingId) {
-    if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
-        fetch(`/bookings/${bookingId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Booking cancelled successfully.');
-                location.reload();
-            } else {
-                alert('Error cancelling booking: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error cancelling booking. Please try again.');
-        });
-    }
+    Swal.fire({
+        icon: 'warning',
+        title: 'Cancel Booking?',
+        text: 'Are you sure you want to cancel this booking? This action cannot be undone.',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, cancel it',
+        cancelButtonText: 'Keep booking'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/bookings/${bookingId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cancelled',
+                        text: 'Booking cancelled successfully.',
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error cancelling booking: ' + (data.message || 'Please try again.'),
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error cancelling booking. Please try again.',
+                });
+            });
+        }
+    });
 }
 
 function markCompleted(bookingId) {
-    if (confirm('Are you sure you want to mark this booking as completed?')) {
-        fetch(`/bookings/${bookingId}`, {
-            method: 'PUT',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ status: 'completed' })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Booking marked as completed successfully.');
-                location.reload();
-            } else {
-                alert('Error updating booking: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error updating booking. Please try again.');
-        });
-    }
+    Swal.fire({
+        icon: 'question',
+        title: 'Mark as Completed?',
+        text: 'Are you sure you want to mark this booking as completed?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, mark completed',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/bookings/${bookingId}`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 'completed' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated',
+                        text: 'Booking marked as completed successfully.',
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error updating booking: ' + (data.message || 'Please try again.'),
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error updating booking. Please try again.',
+                });
+            });
+        }
+    });
 }
 </script>
 @endsection

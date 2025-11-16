@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('admin.categories.update', $category) }}">
+            <form method="POST" action="{{ route('admin.categories.update', $category) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -62,6 +62,26 @@
                                 <h6 class="mb-0">Category Options</h6>
                             </div>
                             <div class="card-body">
+                                @if($category->image)
+                                <div class="mb-3">
+                                    <label class="form-label">Current Image</label>
+                                    <div class="text-center">
+                                        <img src="{{ $category->image_url }}" alt="Current category image" 
+                                             class="img-thumbnail" style="max-height: 150px;">
+                                    </div>
+                                </div>
+                                @endif
+
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Category Image</label>
+                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                           id="image" name="image" accept="image/*">
+                                    @error('image')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">Upload JPG, PNG, GIF (max 2MB) to replace current image</small>
+                                </div>
+
                                 <div class="mb-3">
                                     <label for="icon" class="form-label">Icon <span class="text-danger">*</span></label>
                                     <div class="input-group">
@@ -92,6 +112,28 @@
                                     @error('sort_order')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="is_occasion" name="is_occasion"
+                                               value="1" {{ old('is_occasion', $category->is_occasion) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="is_occasion">
+                                            Occasion Category
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted">Enable this if this category is for a special occasion (e.g. Valentines, Mother's Day).</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="occasion_date" class="form-label">Occasion Date</label>
+                                    <input type="date" class="form-control @error('occasion_date') is-invalid @enderror"
+                                           id="occasion_date" name="occasion_date"
+                                           value="{{ old('occasion_date', optional($category->occasion_date)->format('Y-m-d')) }}">
+                                    @error('occasion_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">Optional. Used to sort and highlight upcoming occasions.</small>
                                 </div>
 
                                 <div class="mb-3">
