@@ -635,14 +635,7 @@
                     <div class="col-md-6">
                         <p class="text-white-50 small mb-0">© 2025 Bona's Flower Shop. All rights reserved.</p>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <a href="#" class="text-white-50 text-decoration-none small me-3">Privacy Policy</a>
-                        <a href="#" class="text-white-50 text-decoration-none small me-3">Terms of Service</a>
-                        <a href="#" class="text-white-50 text-decoration-none small me-3">Shipping Policy</a>
-                        <a href="#" class="text-white-50 text-decoration-none small">Returns & Refunds</a>
-                    </div>
-                </div>
-            </div>
+              
         </footer>
 
         <!-- Scroll to Top Button -->
