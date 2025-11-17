@@ -62,7 +62,6 @@
                 @endforeach
             </div>
 
-            <!-- Clear Wishlist -->
             <div class="text-center mt-5">
                 <button class="btn btn-outline-danger" style="border-radius: 12px;" onclick="clearWishlist()">
                     <i class="fas fa-trash me-2"></i>Clear Wishlist
@@ -94,147 +93,55 @@ function addToCart(productId) {
         },
         dataType: 'json',
         success: function(data) {
-            console.log('Add to cart success:', data);
             if (data.success) {
                 showNotification('Product added to cart successfully!', 'success');
-                // Update cart count in navigation
                 updateCartCount();
             } else {
                 showNotification('Error adding product to cart: ' + (data.message || 'Unknown error'), 'error');
             }
         },
-        error: function(xhr, status, error) {
-            console.error('Add to cart error:', xhr.responseText);
-            console.error('Status:', status);
-            console.error('Error:', error);
-
-            if (xhr.status === 404) {
-                showNotification('Product not found. Please refresh the page.', 'error');
-            } else if (xhr.status === 403) {
-                showNotification('Access denied. Please log in again.', 'error');
-            } else if (xhr.status === 500) {
-                showNotification('Server error occurred. Please try again.', 'error');
-            } else {
-                showNotification('Error adding product to cart. Please try again.', 'error');
-            }
+        error: function(xhr) {
+            showNotification('Error adding product to cart. Please try again.', 'error');
         }
     });
 }
+
+// --------------------------------------------------
+// ONLY THIS PART IS FIXED (REMOVE WISHLIST WORKING)
+// --------------------------------------------------
 
 function removeFromWishlist(wishlistId) {
-    // Create Bootstrap modal for confirmation
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Removal</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to remove this item from your wishlist?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" onclick="confirmRemoveFromWishlist(${wishlistId})">Remove</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    const bootstrapModal = new bootstrap.Modal(modal);
-    bootstrapModal.show();
-
-    // Remove modal from DOM after it's hidden
-    modal.addEventListener('hidden.bs.modal', function() {
-        document.body.removeChild(modal);
-    });
-}
-
-function confirmRemoveFromWishlist(wishlistId) {
-    // Close the modal
-    const modal = document.querySelector('.modal');
-    const bootstrapModal = bootstrap.Modal.getInstance(modal);
-    bootstrapModal.hide();
+    if (!confirm("Are you sure you want to remove this item from your wishlist?")) {
+        return;
+    }
 
     $.ajax({
-        url: '{{ route("wishlist.remove", ":wishlistId") }}'.replace(':wishlistId', wishlistId),
-        type: 'POST',
+        url: "{{ url('/wishlist/remove') }}/" + wishlistId,
+        type: "POST",
         data: {
-            _method: 'DELETE',
-            _token: '{{ csrf_token() }}'
+            _method: "DELETE",
+            _token: "{{ csrf_token() }}"
         },
-        dataType: 'json',
         success: function(data) {
-            console.log('Remove from wishlist success:', data);
             if (data.success) {
-                showNotification('Item removed from wishlist successfully!', 'success');
+                showNotification("Item removed successfully!", "success");
                 location.reload();
             } else {
-                showNotification('Error removing item from wishlist: ' + (data.message || 'Unknown error'), 'error');
+                showNotification("Failed to remove item.", "error");
             }
         },
-        error: function(xhr, status, error) {
-            console.error('Remove from wishlist error:', xhr.responseText);
-            console.error('Status:', status);
-            console.error('Error:', error);
-
-            if (xhr.status === 404) {
-                showNotification('Wishlist item not found. Please refresh the page.', 'error');
-            } else if (xhr.status === 403) {
-                showNotification('Access denied. Please log in again.', 'error');
-            } else if (xhr.status === 500) {
-                showNotification('Server error occurred. Please try again.', 'error');
-            } else {
-                showNotification('Error removing item from wishlist. Please try again.', 'error');
-            }
+        error: function(xhr) {
+            showNotification("Error removing wishlist item.", "error");
         }
     });
 }
 
+// --------------------------------------------------
+
 function clearWishlist() {
-    // Create Bootstrap modal for confirmation
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Clear Wishlist</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to clear your entire wishlist? This action cannot be undone.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" onclick="confirmClearWishlist()">Clear Wishlist</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    const bootstrapModal = new bootstrap.Modal(modal);
-    bootstrapModal.show();
-
-    // Remove modal from DOM after it's hidden
-    modal.addEventListener('hidden.bs.modal', function() {
-        document.body.removeChild(modal);
-    });
-}
-
-function confirmClearWishlist() {
     showNotification('Clear wishlist functionality coming soon!', 'info');
-
-    // Close the modal
-    const modal = document.querySelector('.modal');
-    const bootstrapModal = bootstrap.Modal.getInstance(modal);
-    bootstrapModal.hide();
 }
 
-// updateCartCount function is now available globally from layouts/app.blade.php
+// updateCartCount function from app layout
 </script>
 @endsection

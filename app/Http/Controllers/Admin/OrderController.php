@@ -15,10 +15,10 @@ class OrderController extends Controller
     {
         $this->mailer = $mailer;
     }
+
     public function index(Request $request)
     {
         $orders = Order::with(['user', 'orderItems.product'])->latest()->get();
-
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -53,8 +53,11 @@ class OrderController extends Controller
 
         $order->update($validated);
 
-        // Update tracking if status is shipped
-        if ($validated['status'] === 'shipped' && !$order->tracking) {
+        // Shipping logic ONLY if order is for delivery
+        if ($validated['status'] === 'shipped' 
+            && !$order->tracking 
+            && $order->delivery_method === 'delivery') 
+        {
             $order->tracking()->create([
                 'tracking_number' => 'TRK-' . strtoupper(uniqid()),
                 'carrier' => 'Standard Delivery',
@@ -65,12 +68,13 @@ class OrderController extends Controller
             ]);
         }
 
-        // Update delivered_at if status is delivered
-        if ($validated['status'] === 'delivered') {
+        // Delivered logic ONLY for delivery orders
+        if ($validated['status'] === 'delivered' 
+            && $order->delivery_method === 'delivery') 
+        {
             $order->update(['delivered_at' => now()]);
         }
 
-        // Send status update email
         $this->sendOrderStatusEmail($order);
 
         return redirect()->route('admin.orders.show', $order)
@@ -86,8 +90,11 @@ class OrderController extends Controller
         $oldStatus = $order->status;
         $order->update(['status' => $request->status]);
 
-        // Handle status-specific actions
-        if ($request->status === 'shipped' && !$order->tracking) {
+        // Shipping logic ONLY if delivery order
+        if ($request->status === 'shipped' 
+            && !$order->tracking 
+            && $order->delivery_method === 'delivery') 
+        {
             $order->tracking()->create([
                 'tracking_number' => 'TRK-' . strtoupper(uniqid()),
                 'carrier' => 'Standard Delivery',
@@ -98,11 +105,13 @@ class OrderController extends Controller
             ]);
         }
 
-        if ($request->status === 'delivered') {
+        // Delivered logic ONLY if delivery order
+        if ($request->status === 'delivered' 
+            && $order->delivery_method === 'delivery') 
+        {
             $order->update(['delivered_at' => now()]);
         }
 
-        // Send status update email
         $this->sendOrderStatusEmail($order, $oldStatus);
 
         return redirect()->back()->with('success', "Order status updated from {$oldStatus} to {$request->status}!");
@@ -120,7 +129,6 @@ class OrderController extends Controller
     {
         $orders = Order::with(['user', 'orderItems.product'])->latest()->get();
 
-        // Generate CSV content
         $csv = "Order Number,Customer,Status,Total,Order Date\n";
 
         foreach ($orders as $order) {
@@ -132,9 +140,6 @@ class OrderController extends Controller
             ->header('Content-Disposition', 'attachment; filename="orders.csv"');
     }
 
-    /**
-     * Approve cancellation request for confirmed orders.
-     */
     public function approveCancellation(Order $order)
     {
         if ($order->status !== 'confirmed' || !$order->cancellation_requested) {
@@ -146,15 +151,11 @@ class OrderController extends Controller
             'cancellation_requested' => false
         ]);
 
-        // Send status update email
         $this->sendOrderStatusEmail($order, 'confirmed');
 
         return redirect()->back()->with('success', 'Cancellation request approved. Order has been cancelled.');
     }
 
-    /**
-     * Create tracking information for an order.
-     */
     public function createTracking(Request $request, Order $order)
     {
         $validated = $request->validate([
@@ -163,7 +164,6 @@ class OrderController extends Controller
             'description' => 'nullable|string|max:500',
         ]);
 
-        // Create tracking information
         $order->tracking()->create([
             'tracking_number' => 'TRK-' . strtoupper(uniqid()),
             'carrier' => $validated['carrier'],
@@ -177,9 +177,6 @@ class OrderController extends Controller
             ->with('success', 'Tracking information created successfully!');
     }
 
-    /**
-     * Reject cancellation request for confirmed orders.
-     */
     public function rejectCancellation(Order $order)
     {
         if ($order->status !== 'confirmed' || !$order->cancellation_requested) {
@@ -188,7 +185,6 @@ class OrderController extends Controller
 
         $order->update(['cancellation_requested' => false]);
 
-        // Send status update email (still confirmed)
         $this->sendOrderStatusEmail($order, 'confirmed');
 
         return redirect()->back()->with('success', 'Cancellation request rejected. Order remains confirmed.');

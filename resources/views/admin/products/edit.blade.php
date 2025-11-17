@@ -39,20 +39,11 @@
                     <!-- Basic Information -->
                     <div class="col-md-8">
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror"
                                        id="name" name="name" value="{{ old('name', $product->name) }}" required>
                                 @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="sku" class="form-label">SKU <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('sku') is-invalid @enderror"
-                                       id="sku" name="sku" value="{{ old('sku', $product->sku) }}" required>
-                                @error('sku')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -166,7 +157,7 @@
                                     </div>
                                 </div>
 
-                                                                @if($product->main_image)
+                                @if($product->main_image)
                                 <div class="mb-3">
                                     <label class="form-label">Current Main Image</label>
                                     <div class="border rounded p-2">
@@ -186,9 +177,7 @@
                                     <small class="form-text text-muted">Upload a JPG, PNG, GIF (max 2MB) to replace current image</small>
                                 </div>
 
-                                
-
-                                                                @if($product->gallery_images && count($product->gallery_images) > 0)
+                                @if($product->gallery_images && count($product->gallery_images) > 0)
                                 <div class="mb-3">
                                     <label class="form-label">Current Gallery Images</label>
                                     <div class="row">

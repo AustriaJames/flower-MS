@@ -9,9 +9,7 @@
                 <h1 class="display-4 fw-bold text-white mb-4" style="font-size: clamp(2rem, 5vw, 3.5rem);">Create Magical Moments with Our Exquisite Blooms</h1>
                 <p class="lead text-white mb-4" style="font-size: clamp(1rem, 2.5vw, 1.25rem);">Discover a world of floral elegance. Hand-picked, fresh, and delivered with love for every special occasion. Experience the art of gifting with Bona's Flower Shop.</p>
                 <div class="d-flex gap-3 flex-wrap">
-                    <a href="{{ route('products.index') }}" class="btn btn-lg fw-semibold text-white border-white" style="background: transparent; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
-                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
-                    </a>
+                  
                     <a href="{{ route('occasions.index') }}" class="btn btn-lg fw-semibold" style="background: #F5EEE4; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
                         <i class="fas fa-calendar-alt me-2"></i>Book Event
                     </a>
@@ -146,7 +144,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: {{ $product->sku ?? 'N/A' }}</div>
                             <div class="text-success">In Stock</div>
                         </div>
                     </div>
@@ -248,10 +245,6 @@
             <div class="col-lg-8 col-md-12 mb-4 mb-lg-0">
                 <h2 class="display-5 fw-bold text-white mb-4" style="font-size: clamp(2rem, 4vw, 3rem);">Ready to create something beautiful?</h2>
                 <p class="lead text-white mb-4" style="font-size: clamp(1rem, 2.5vw, 1.25rem);">Start shopping now or book your special event with our expert florists.</p>
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="{{ route('products.index') }}" class="btn btn-lg fw-semibold text-white border-white" style="background: transparent; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
-                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
-                    </a>
                     @auth
                         <a href="{{ route('bookings.create') }}" class="btn btn-lg fw-semibold" style="background: white; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
                             <i class="fas fa-calendar-plus me-2"></i>Book Event
@@ -293,30 +286,7 @@
     </div>
 </section>
 
-<!-- Newsletter Section -->
-<section class="py-5" style="background: #F5EEE4;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10 col-sm-12 text-center">
-                <h2 class="display-5 fw-bold mb-4" style="color: #5D2B4C; font-size: clamp(2rem, 4vw, 3rem);">Stay Updated</h2>
-                <p class="lead mb-4" style="color: #6c757d; font-size: clamp(1rem, 2vw, 1.25rem);">Subscribe to our newsletter for exclusive offers, flower care tips, and seasonal updates.</p>
 
-                <div class="row justify-content-center">
-                    <div class="col-md-8 col-sm-12">
-                        <form action="#" method="POST" class="input-group mb-3">
-                            @csrf
-                            <input type="email" name="email" class="form-control border-0" placeholder="Enter your email address" style="border-radius: 12px 0 0 12px; padding: 15px;" required>
-                            <button class="btn fw-semibold text-white" type="submit" style="background: #CFB8BE; color: #5D2B4C; border-radius: 0 12px 12px 0; padding: 15px 30px;">
-                                Subscribe
-                            </button>
-                        </form>
-                        <p class="small text-muted">We respect your privacy. Unsubscribe at any time.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <style>
 .hero-section {

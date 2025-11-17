@@ -40,7 +40,6 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5 class="text-primary">{{ $product->name }}</h5>
-                            <p class="text-muted mb-2">SKU: {{ $product->sku }}</p>
                             <p class="text-muted mb-3">{{ $product->short_description }}</p>
 
                             <div class="mb-3">

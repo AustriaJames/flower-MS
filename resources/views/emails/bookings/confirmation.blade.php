@@ -127,7 +127,7 @@
             <h3>📞 Need to Make Changes?</h3>
             <p>If you need to modify your booking or have any questions, please contact us:</p>
             <ul>
-                <li><strong>Phone:</strong> +63 123 456 7890</li>
+                <li><strong>Phone:</strong> 0955 644 6048</li>
                 <li><strong>Email:</strong> bookings@flowershop.com</li>
                 <li><strong>Hours:</strong> Monday - Saturday, 8:00 AM - 6:00 PM</li>
             </ul>

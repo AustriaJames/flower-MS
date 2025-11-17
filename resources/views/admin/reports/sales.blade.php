@@ -203,7 +203,6 @@
                                                     @endif
                                                     <div>
                                                         <strong>{{ $product->name }}</strong><br>
-                                                        <small class="text-muted">SKU: {{ $product->sku }}</small>
                                                     </div>
                                                 </div>
                                             </td>

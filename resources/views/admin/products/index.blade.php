@@ -25,7 +25,7 @@
             <div class="col-md-3">
                 <label for="search" class="form-label">Search</label>
                 <input type="text" name="search" id="search" class="form-control"
-                       value="{{ request('search') }}" placeholder="Product name, SKU...">
+                       value="{{ request('search') }}" placeholder="Product name...">
             </div>
             <div class="col-md-2">
                 <label for="category_id" class="form-label">Category</label>
@@ -82,7 +82,6 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>SKU</th>
                                     <th>Category</th>
                                     <th>Price</th>
                                     <th>Stock</th>
@@ -111,9 +110,6 @@
                                                     <small class="text-muted">{{ Str::limit($product->description, 60) }}</small>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <code>{{ $product->sku }}</code>
                                         </td>
                                         <td>
                                             <span class="badge bg-info">{{ $product->category->name }}</span>
@@ -170,7 +166,6 @@
                             </tbody>
                         </table>
                     </div>
-
 
                 @else
                     <div class="empty-state">
@@ -232,25 +227,10 @@
 $(document).ready(function() {
     $('#productsTable').DataTable({
         dom: 'Bfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
         pageLength: 25,
-        order: [[6, 'desc']], // Sort by created date by default
-        columnDefs: [
-            { orderable: false, targets: [7] } // Disable sorting for actions column
-        ],
-        language: {
-            search: "Search products:",
-            lengthMenu: "Show _MENU_ products per page",
-            info: "Showing _START_ to _END_ of _TOTAL_ products",
-            paginate: {
-                first: "First",
-                last: "Last",
-                next: "Next",
-                previous: "Previous"
-            }
-        }
+        order: [[5, 'desc']], // Sort by created date
+        columnDefs: [{ orderable: false, targets: [6] }] // Actions column
     });
 });
 
@@ -265,7 +245,6 @@ function toggleProductStatus(productId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Show success message
             const status = data.status;
             alert(`Product ${status} successfully.`);
         }

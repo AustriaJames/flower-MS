@@ -445,9 +445,7 @@
                                 </div>
                             @else
                                 <!-- Guest User Buttons -->
-                                <a href="{{ route('login') }}" class="btn me-2" style="background: #5D2B4C; color: white; border-radius: 8px;" title="Login to access cart">
-                                    <i class="fas fa-shopping-cart me-1"></i>Cart
-                                </a>
+                             
                             @endauth
 
                             <!-- Track Button (Always Visible) -->
@@ -460,13 +458,6 @@
             </div>
         </nav>
 
-        <!-- Special Offer Banner -->
-        <div class="special-offer py-2 text-center" style="background: #5D2B4C;">
-            <div class="container">
-                <span class="text-white me-3">Special Offer: Free delivery on orders over P1000!</span>
-                <a href="#" class="btn btn-sm text-white border-white" style="background: transparent;">Shop Now</a>
-            </div>
-        </div>
 
         <!-- Success/Error Messages -->
         @if(session('success'))
@@ -553,7 +544,6 @@
                         <div>
                             <h6 class="mb-0 fw-bold text-white">Customer Support</h6>
                             <small class="text-white-50">
-                                <span class="badge bg-success" id="floating-status-badge">Online</span>
                                 <span class="badge bg-info ms-1" id="floating-connection-status">Real-time</span>
                             </small>
                         </div>
@@ -622,10 +612,7 @@
                         <p class="text-white-50 small mb-1">info@bonasflowershop.com</p>
                         <p class="text-white-50 small mb-3">Mon-Fri: 9AM-6PM</p>
 
-                        <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Your email">
-                            <button class="btn btn-sm" style="background: #CFB8BE; color: #5D2B4C;">Subscribe</button>
-                        </div>
+                      
                     </div>
                 </div>
 
@@ -635,14 +622,7 @@
                     <div class="col-md-6">
                         <p class="text-white-50 small mb-0">© 2025 Bona's Flower Shop. All rights reserved.</p>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <a href="#" class="text-white-50 text-decoration-none small me-3">Privacy Policy</a>
-                        <a href="#" class="text-white-50 text-decoration-none small me-3">Terms of Service</a>
-                        <a href="#" class="text-white-50 text-decoration-none small me-3">Shipping Policy</a>
-                        <a href="#" class="text-white-50 text-decoration-none small">Returns & Refunds</a>
-                    </div>
-                </div>
-            </div>
+              
         </footer>
 
         <!-- Scroll to Top Button -->

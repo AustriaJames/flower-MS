@@ -65,7 +65,6 @@
                             </div>
 
                             <div class="small text-muted">
-                                <div>SKU: {{ $product->sku ?? 'N/A' }}</div>
                                 <div class="text-success">In Stock</div>
                             </div>
                         </div>

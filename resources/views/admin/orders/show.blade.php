@@ -36,7 +36,6 @@
                             ];
 
                             $statusColor = $statusColors[$order->status] ?? 'secondary';
-
                             $isPickup = $order->delivery_type === 'pickup';
                             $displayStatus = $order->status;
 
@@ -77,7 +76,7 @@
                             </div>
                             @endif
 
-                            @if($order->delivered_at)
+                            @if(!$isPickup && $order->delivered_at)
                             <div class="mb-3">
                                 <strong>Delivered:</strong>
                                 <span class="text-success ms-2">{{ $order->delivered_at->format('M d, Y \a\t h:i A') }}</span>
@@ -122,7 +121,6 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Product</th>
-                                    <th>SKU</th>
                                     <th>Price</th>
                                     <th>Quantity</th>
                                     <th>Total</th>
@@ -151,9 +149,6 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <code>{{ $item->product->sku }}</code>
-                                    </td>
-                                    <td>
                                         <strong>₱{{ number_format($item->unit_price, 2) }}</strong>
                                     </td>
                                     <td>
@@ -170,96 +165,98 @@
                 </div>
             </div>
 
-            <!-- Tracking Information -->
-            @if($order->tracking)
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Tracking Information</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <strong>Tracking Number:</strong>
-                                <span class="ms-2">{{ $order->tracking->tracking_number }}</span>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Carrier:</strong>
-                                <span class="ms-2">{{ $order->tracking->carrier }}</span>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Status:</strong>
-                                <span class="badge bg-{{ $order->tracking->is_delivered ? 'success' : 'info' }} ms-2">
-                                    {{ ucfirst($order->tracking->status) }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <strong>Current Location:</strong>
-                                <span class="ms-2">{{ $order->tracking->current_location ?? 'N/A' }}</span>
-                            </div>
-                            @if($order->tracking->estimated_delivery)
-                            <div class="mb-3">
-                                <strong>Estimated Delivery:</strong>
-                                <span class="ms-2">{{ $order->tracking->estimated_delivery->format('M d, Y') }}</span>
-                            </div>
-                            @endif
-                            @if($order->tracking->actual_delivery)
-                            <div class="mb-3">
-                                <strong>Actual Delivery:</strong>
-                                <span class="ms-2 text-success">{{ $order->tracking->actual_delivery->format('M d, Y') }}</span>
-                            </div>
-                            @endif
-                        </div>
+            <!-- Tracking Information (only for delivery orders) -->
+            @if($order->delivery_type === 'delivery')
+                @if($order->tracking)
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Tracking Information</h6>
                     </div>
-
-                    @if($order->tracking->description)
-                    <div class="mt-3">
-                        <strong>Description:</strong>
-                        <p class="mb-0 mt-1">{{ $order->tracking->description }}</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-            @else
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Tracking Information</h6>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>No tracking information available yet.</strong>
-                        <p class="mb-2 mt-2">Tracking information will be automatically created when the order status is changed to "shipped".</p>
-                    </div>
-
-                    <form method="POST" action="{{ route('admin.orders.create-tracking', $order) }}" class="mt-3">
-                        @csrf
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="carrier" class="form-label">Carrier</label>
-                                    <input type="text" class="form-control" id="carrier" name="carrier" value="Standard Delivery" required>
+                                    <strong>Tracking Number:</strong>
+                                    <span class="ms-2">{{ $order->tracking->tracking_number }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Carrier:</strong>
+                                    <span class="ms-2">{{ $order->tracking->carrier }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Status:</strong>
+                                    <span class="badge bg-{{ $order->tracking->is_delivered ? 'success' : 'info' }} ms-2">
+                                        {{ ucfirst($order->tracking->status) }}
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="estimated_delivery" class="form-label">Estimated Delivery Date</label>
-                                    <input type="date" class="form-control" id="estimated_delivery" name="estimated_delivery" required>
+                                    <strong>Current Location:</strong>
+                                    <span class="ms-2">{{ $order->tracking->current_location ?? 'N/A' }}</span>
                                 </div>
+                                @if($order->tracking->estimated_delivery)
+                                <div class="mb-3">
+                                    <strong>Estimated Delivery:</strong>
+                                    <span class="ms-2">{{ $order->tracking->estimated_delivery->format('M d, Y') }}</span>
+                                </div>
+                                @endif
+                                @if($order->tracking->actual_delivery)
+                                <div class="mb-3">
+                                    <strong>Actual Delivery:</strong>
+                                    <span class="ms-2 text-success">{{ $order->tracking->actual_delivery->format('M d, Y') }}</span>
+                                </div>
+                                @endif
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter tracking description...">Order has been processed and is ready for shipping</textarea>
+
+                        @if($order->tracking->description)
+                        <div class="mt-3">
+                            <strong>Description:</strong>
+                            <p class="mb-0 mt-1">{{ $order->tracking->description }}</p>
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-truck me-2"></i>Create Tracking Information
-                        </button>
-                    </form>
+                        @endif
+                    </div>
                 </div>
-            </div>
+                @else
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Tracking Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>No tracking information available yet.</strong>
+                            <p class="mb-2 mt-2">Tracking information will be automatically created when the order status is changed to "shipped".</p>
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.orders.create-tracking', $order) }}" class="mt-3">
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="carrier" class="form-label">Carrier</label>
+                                        <input type="text" class="form-control" id="carrier" name="carrier" value="Standard Delivery" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="estimated_delivery" class="form-label">Estimated Delivery Date</label>
+                                        <input type="date" class="form-control" id="estimated_delivery" name="estimated_delivery" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3">Order has been processed and is ready for shipping</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-truck me-2"></i>Create Tracking Information
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endif
             @endif
         </div>
 
@@ -303,7 +300,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Addresses</h6>
                 </div>
                 <div class="card-body">
-                    @if($order->shippingAddress)
+                    @if($order->shippingAddress && $order->delivery_type === 'delivery')
                     <div class="mb-3">
                         <h6 class="text-primary">Shipping Address</h6>
                         <p class="mb-1">{{ $order->shippingAddress->full_name }}</p>
@@ -341,18 +338,15 @@
                             <ul class="dropdown-menu w-100">
                                 @php
                                     $allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
-                                    $isPickup = $order->delivery_type === 'pickup';
                                 @endphp
                                 @foreach($allStatuses as $status)
                                     @if($status === $order->status)
                                         @continue
                                     @endif
                                     @php
-                                        if ($isPickup && $status === 'shipped') {
-                                            continue;
-                                        }
                                         $label = ucfirst($status);
                                         if ($isPickup) {
+                                            if ($status === 'shipped') continue;
                                             $label = match($status) {
                                                 'confirmed' => 'Approved',
                                                 'processing' => 'For Preparation',
@@ -407,7 +401,7 @@
                             <i class="fas fa-user me-2"></i>View Customer
                         </a>
 
-                        @if(!$order->tracking)
+                        @if(!$order->tracking && $order->delivery_type === 'delivery')
                         <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#createTrackingModal">
                             <i class="fas fa-truck me-2"></i>Create Tracking
                         </button>
@@ -419,8 +413,8 @@
     </div>
 </div>
 
-<!-- Create Tracking Modal -->
-@if(!$order->tracking)
+<!-- Create Tracking Modal (delivery only) -->
+@if(!$order->tracking && $order->delivery_type === 'delivery')
 <div class="modal fade" id="createTrackingModal" tabindex="-1" aria-labelledby="createTrackingModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -454,7 +448,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter tracking description...">Order has been processed and is ready for shipping</textarea>
+                        <textarea class="form-control" id="description" name="description" rows="3">Order has been processed and is ready for shipping</textarea>
                     </div>
                 </div>
                 <div class="modal-footer">

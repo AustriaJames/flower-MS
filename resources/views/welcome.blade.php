@@ -136,7 +136,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: FL-001</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>
@@ -187,7 +186,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: FL-002</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>
@@ -238,7 +236,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: FL-003</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>
@@ -289,7 +286,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: FL-004</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>

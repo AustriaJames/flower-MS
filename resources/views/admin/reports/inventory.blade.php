@@ -107,7 +107,6 @@
                                                     @endif
                                                     <div>
                                                         <strong>{{ $product->name }}</strong><br>
-                                                        <small class="text-muted">{{ $product->sku }}</small>
                                                     </div>
                                                 </div>
                                             </td>
@@ -169,7 +168,6 @@
                                                     @endif
                                                     <div>
                                                         <strong>{{ $product->name }}</strong><br>
-                                                        <small class="text-muted">{{ $product->sku }}</small>
                                                     </div>
                                                 </div>
                                             </td>

@@ -197,7 +197,6 @@ class ComprehensiveSeeder extends Seeder
                 'slug' => Str::slug($name),
                 'description' => "Beautiful {$name} perfect for any occasion.",
                 'short_description' => "Perfect {$name} for special moments.",
-                'sku' => 'FLW-' . str_pad($index + 1, 4, '0', STR_PAD_LEFT),
                 'price' => $price,
                 'sale_price' => rand(0, 1) ? $price * 0.8 : null,
                 'stock_quantity' => $stock,

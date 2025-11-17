@@ -38,17 +38,6 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="sku" class="form-label">SKU <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('sku') is-invalid @enderror"
-                                       id="sku" name="sku" value="{{ old('sku') }}" required>
-                                @error('sku')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
                                 <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
                                 <select class="form-select @error('category_id') is-invalid @enderror"
                                         id="category_id" name="category_id" required>
@@ -63,7 +52,9 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="stock_quantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control @error('stock_quantity') is-invalid @enderror"
@@ -73,9 +64,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
 
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="price" class="form-label">Regular Price <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -88,7 +77,9 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="sale_price" class="form-label">Sale Price</label>
                                 <div class="input-group">
@@ -151,7 +142,7 @@
                                     </div>
                                 </div>
 
-                                                                <div class="mb-3">
+                                <div class="mb-3">
                                     <label for="main_image_file" class="form-label">Main Image Upload</label>
                                     <input type="file" class="form-control @error('main_image_file') is-invalid @enderror"
                                            id="main_image_file" name="main_image_file" accept="image/*">
@@ -161,9 +152,7 @@
                                     <small class="form-text text-muted">Upload a JPG, PNG, GIF (max 2MB) or use URL below</small>
                                 </div>
 
-                            
-
-                                                                <div class="mb-3">
+                                <div class="mb-3">
                                     <label for="gallery_images_files" class="form-label">Gallery Images Upload</label>
                                     <input type="file" class="form-control @error('gallery_images_files') is-invalid @enderror"
                                            id="gallery_images_files" name="gallery_images_files[]" accept="image/*" multiple>
@@ -222,15 +211,6 @@
 
 @push('scripts')
 <script>
-// Auto-generate SKU from product name
-document.getElementById('name').addEventListener('input', function() {
-    const name = this.value;
-    const sku = name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 8).toUpperCase();
-    if (sku && !document.getElementById('sku').value) {
-        document.getElementById('sku').value = 'FL-' + sku + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
-    }
-});
-
 // Validate sale price is less than regular price
 document.getElementById('sale_price').addEventListener('input', function() {
     const regularPrice = parseFloat(document.getElementById('price').value) || 0;
@@ -264,13 +244,9 @@ document.getElementById('main_image_file').addEventListener('change', function(e
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            // Remove existing preview
             const existingPreview = document.getElementById('main_image_preview');
-            if (existingPreview) {
-                existingPreview.remove();
-            }
+            if (existingPreview) existingPreview.remove();
 
-            // Create new preview
             const previewDiv = document.createElement('div');
             previewDiv.id = 'main_image_preview';
             previewDiv.className = 'mt-2 text-center';
@@ -281,8 +257,6 @@ document.getElementById('main_image_file').addEventListener('change', function(e
                     <div class="small text-muted mt-1">Preview</div>
                 </div>
             `;
-
-            // Insert after the file input
             e.target.parentNode.insertBefore(previewDiv, e.target.nextSibling);
         };
         reader.readAsDataURL(file);
@@ -293,13 +267,9 @@ document.getElementById('main_image_file').addEventListener('change', function(e
 document.getElementById('gallery_images_files').addEventListener('change', function(e) {
     const files = e.target.files;
     if (files.length > 0) {
-        // Remove existing preview
         const existingPreview = document.getElementById('gallery_images_preview');
-        if (existingPreview) {
-            existingPreview.remove();
-        }
+        if (existingPreview) existingPreview.remove();
 
-        // Create new preview
         const previewDiv = document.createElement('div');
         previewDiv.id = 'gallery_images_preview';
         previewDiv.className = 'mt-2';
@@ -308,7 +278,7 @@ document.getElementById('gallery_images_files').addEventListener('change', funct
         const row = previewDiv.querySelector('.row');
 
         Array.from(files).forEach((file, index) => {
-            if (index < 6) { // Limit preview to 6 images
+            if (index < 6) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const col = document.createElement('div');
@@ -336,7 +306,6 @@ document.getElementById('gallery_images_files').addEventListener('change', funct
             row.appendChild(col);
         }
 
-        // Insert after the file input
         e.target.parentNode.insertBefore(previewDiv, e.target.nextSibling);
     }
 });

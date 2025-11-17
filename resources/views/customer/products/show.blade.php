@@ -138,7 +138,6 @@
                                 <div class="col-md-6">
                                     <h6 class="fw-semibold" style="color: #5D2B4C;">Product Information</h6>
                                     <ul class="list-unstyled">
-                                        <li class="mb-2"><strong>SKU:</strong> {{ $product->sku ?? 'N/A' }}</li>
                                         <li class="mb-2"><strong>Category:</strong> {{ $product->category->name ?? 'N/A' }}</li>
                                         <li class="mb-2"><strong>Price:</strong> ₱{{ number_format($product->price, 2) }}</li>
                                         <li class="mb-2"><strong>Rating:</strong> {{ $product->rating ?? 'No ratings yet' }}/5</li>

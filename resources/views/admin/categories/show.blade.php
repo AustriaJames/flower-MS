@@ -81,7 +81,6 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Product</th>
-                                    <th>SKU</th>
                                     <th>Price</th>
                                     <th>Stock</th>
                                     <th>Status</th>
@@ -110,9 +109,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <code>{{ $product->sku }}</code>
-                                    </td>
+                                 
                                     <td>
                                         @if($product->is_on_sale)
                                             <span class="text-decoration-line-through text-muted">₱{{ number_format($product->price, 2) }}</span>

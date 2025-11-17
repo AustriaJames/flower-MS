@@ -19,7 +19,6 @@ class Product extends Model
         'short_description',
         'price',
         'sale_price',
-        'sku',
         'stock_quantity',
         'in_stock',
         'is_featured',

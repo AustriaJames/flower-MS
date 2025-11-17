@@ -55,7 +55,6 @@ class FlowerShopSystemTest extends TestCase
             'description' => 'Test product description',
             'short_description' => 'Short description',
             'price' => 1000.00,
-            'sku' => 'TEST-001',
             'stock_quantity' => 10,
             'in_stock' => true,
             'is_featured' => false,
@@ -66,7 +65,6 @@ class FlowerShopSystemTest extends TestCase
 
         $this->assertDatabaseHas('products', [
             'name' => 'Test Product',
-            'sku' => 'TEST-001',
         ]);
 
         // Test relationships
@@ -90,7 +88,6 @@ class FlowerShopSystemTest extends TestCase
             'name' => 'Active Product',
             'slug' => 'active-product',
             'price' => 1000.00,
-            'sku' => 'ACTIVE-001',
             'stock_quantity' => 10,
             'is_active' => true,
             'category_id' => $category->id,
@@ -101,7 +98,6 @@ class FlowerShopSystemTest extends TestCase
             'name' => 'Inactive Product',
             'slug' => 'inactive-product',
             'price' => 1000.00,
-            'sku' => 'INACTIVE-001',
             'stock_quantity' => 10,
             'is_active' => false,
             'category_id' => $category->id,
@@ -118,7 +114,6 @@ class FlowerShopSystemTest extends TestCase
             'name' => 'Featured Product',
             'slug' => 'featured-product',
             'price' => 1000.00,
-            'sku' => 'FEATURED-001',
             'stock_quantity' => 10,
             'is_featured' => true,
             'is_active' => true,
@@ -146,7 +141,6 @@ class FlowerShopSystemTest extends TestCase
             'slug' => 'sale-product',
             'price' => 1000.00,
             'sale_price' => 800.00,
-            'sku' => 'SALE-001',
             'stock_quantity' => 10,
             'is_active' => true,
             'category_id' => $category->id,
@@ -158,7 +152,6 @@ class FlowerShopSystemTest extends TestCase
             'name' => 'Regular Product',
             'slug' => 'regular-product',
             'price' => 1000.00,
-            'sku' => 'REGULAR-001',
             'stock_quantity' => 10,
             'is_active' => true,
             'category_id' => $category->id,
@@ -193,7 +186,6 @@ class FlowerShopSystemTest extends TestCase
             'name' => 'Product 1',
             'slug' => 'product-1',
             'price' => 1000.00,
-            'sku' => 'PROD-001',
             'stock_quantity' => 10,
             'is_active' => true,
             'category_id' => $category->id,
@@ -204,7 +196,6 @@ class FlowerShopSystemTest extends TestCase
             'name' => 'Product 2',
             'slug' => 'product-2',
             'price' => 2000.00,
-            'sku' => 'PROD-002',
             'stock_quantity' => 10,
             'is_active' => true,
             'category_id' => $category->id,

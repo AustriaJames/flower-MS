@@ -116,7 +116,7 @@
             <h3>📞 Questions About the Reschedule?</h3>
             <p>If you have any questions about the rescheduled date or need to make further changes, please contact us:</p>
             <ul>
-                <li><strong>Phone:</strong> +63 123 456 7890</li>
+                <li><strong>Phone:</strong> 0955 644 6048</li>
                 <li><strong>Email:</strong> bookings@flowershop.com</li>
                 <li><strong>Hours:</strong> Monday - Saturday, 8:00 AM - 6:00 PM</li>
             </ul>

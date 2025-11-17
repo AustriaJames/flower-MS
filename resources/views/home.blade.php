@@ -136,7 +136,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: FL-001</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>
@@ -187,7 +186,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: FL-002</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>
@@ -238,7 +236,6 @@
                         </div>
 
                         <div class="small text-muted">
-                            <div>SKU: FL-003</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>
@@ -288,8 +285,7 @@
                             </button>
                         </div>
 
-                        <div class="small text-muted">
-                            <div>SKU: FL-004</div>
+                        <div class="-004</div>
                             <div>Stock: In Stock</div>
                         </div>
                     </div>
@@ -477,9 +473,6 @@
                 <h2 class="display-5 fw-bold text-white mb-4" style="font-size: clamp(2rem, 4vw, 3rem);">Join thousands of satisfied customers who trust us for their floral needs.</h2>
                 <p class="lead text-white mb-4" style="font-size: clamp(1rem, 2.5vw, 1.25rem);">Order now and experience the difference that fresh, beautiful flowers can make.</p>
                 <div class="d-flex gap-3 flex-wrap">
-                    <button class="btn btn-lg fw-semibold text-white border-white" style="background: transparent; border-radius: 12px; padding: 15px 30px; white-space: nowrap;" data-bs-toggle="modal" data-bs-target="#loginModal">
-                        Shop Now
-                    </button>
                     <button class="btn btn-lg fw-semibold" style="background: white; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;" data-bs-toggle="modal" data-bs-target="#loginModal">
                         Contact Us
                     </button>

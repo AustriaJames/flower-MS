@@ -235,7 +235,6 @@ class ReportsController extends Controller
                 return (object) [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'sku' => $product->sku,
                     'main_image' => $product->main_image,
                     'category' => $product->category,
                     'stock_quantity' => $product->stock_quantity,
@@ -256,7 +255,6 @@ class ReportsController extends Controller
                 return (object) [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'sku' => $product->sku,
                     'main_image' => $product->main_image,
                     'category' => $product->category,
                     'avg_rating' => $avgRating,

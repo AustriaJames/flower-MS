@@ -21,7 +21,6 @@
                         <div>
                             <h6 class="mb-0 fw-bold">Bona's Flower Shop Support</h6>
                             <small class="opacity-75">
-                                <span class="badge bg-success" id="status-badge">Online</span>
                                 <span class="badge bg-info ms-1" id="connection-status">Real-time Active</span>
                             </small>
                         </div>

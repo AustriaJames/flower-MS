@@ -61,7 +61,6 @@ class AdminDashboardSeeder extends Seeder
                 Product::create([
                     'name' => $category->name . ' ' . $i,
                     'slug' => Str::slug($category->name . ' ' . $i),
-                    'sku' => 'SKU-' . strtoupper($category->name) . '-' . $i,
                     'description' => 'Beautiful ' . strtolower($category->name) . ' arrangement',
                     'price' => rand(500, 2000),
                     'stock_quantity' => rand(10, 50),

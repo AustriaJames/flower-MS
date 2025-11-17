@@ -9,10 +9,6 @@
         <div class="d-flex justify-content-between align-items-center">
             <h1>Users Management</h1>
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.users.export') }}" class="btn-action btn-success btn-action-lg">
-                    <i class="fas fa-download"></i>
-                    <span>Export Users</span>
-                </a>
                 <a href="{{ route('admin.users.create') }}" class="btn-action btn-primary btn-action-lg">
                     <i class="fas fa-plus"></i>
                     <span>Add New User</span>
