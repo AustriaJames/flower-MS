@@ -378,9 +378,9 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('occasions.index') }}">All Occasions</a></li>
                                 @auth
-                                    <li><a class="dropdown-item" href="{{ route('bookings.create') }}">Book Event</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('bookings.create') }}">Schedule Event</a></li>
                                 @else
-                                    <li><a class="dropdown-item" href="{{ route('login') }}">Book Event</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('login') }}">Schedule Event</a></li>
                                 @endauth
                             </ul>
                         </li>

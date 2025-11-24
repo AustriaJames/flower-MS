@@ -330,13 +330,11 @@ class ComprehensiveSeeder extends Seeder
         for ($i = 1; $i <= 25; $i++) {
             $customer = $customers[array_rand($customers)];
             $status = $statuses[array_rand($statuses)];
-            $priority = $priorities[array_rand($priorities)];
 
             $chat = Chat::create([
                 'user_id' => $customer->id,
                 'subject' => 'Support Request #' . $i,
                 'status' => $status,
-                'priority' => $priority,
                 'assigned_to' => rand(0, 1) ? $admin1->id : null,
                 'assigned_at' => rand(0, 1) ? Carbon::now()->subDays(rand(1, 30)) : null,
                 'resolved_at' => $status === 'resolved' ? Carbon::now()->subDays(rand(1, 30)) : null,

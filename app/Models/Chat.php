@@ -15,7 +15,6 @@ class Chat extends Model
         'user_id',
         'subject',
         'status',
-        'priority',
         'assigned_to',
         'assigned_at',
         'resolved_at',
@@ -122,20 +121,6 @@ class Chat extends Model
             'in_progress' => 'bg-info',
             'resolved' => 'bg-success',
             'closed' => 'bg-secondary',
-            default => 'bg-secondary',
-        };
-    }
-
-    /**
-     * Get the priority badge class.
-     */
-    public function getPriorityBadgeClassAttribute()
-    {
-        return match($this->priority) {
-            'low' => 'bg-success',
-            'medium' => 'bg-warning',
-            'high' => 'bg-danger',
-            'urgent' => 'bg-danger',
             default => 'bg-secondary',
         };
     }

@@ -35,11 +35,11 @@
                                         </a>
                                         @auth
                                             <a href="{{ route('bookings.create') }}" class="btn fw-semibold text-white btn-sm" style="background: #5D2B4C; border-radius: 8px;">
-                                                <i class="bi bi-calendar-plus me-1"></i>Book Event
+                                                <i class="bi bi-calendar-plus me-1"></i>Schedule Event
                                             </a>
                                         @else
                                             <a href="{{ route('login') }}" class="btn fw-semibold text-white btn-sm" style="background: #5D2B4C; border-radius: 8px;">
-                                                <i class="bi bi-calendar-plus me-1"></i>Book Event
+                                                <i class="bi bi-calendar-plus me-1"></i>Schedule Event
                                             </a>
                                         @endauth
                                     </div>
@@ -51,7 +51,7 @@
                 @endforeach
             </div>
 
-            <!-- Book Event CTA -->
+            <!-- Schedule Event -->
             <div class="row mt-5">
                 <div class="col-12">
                     <div class="card border-0 shadow-lg" style="border-radius: 20px; background: linear-gradient(135deg, #5D2B4C 0%, #CFB8BE 100%);">

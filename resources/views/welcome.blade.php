@@ -83,7 +83,7 @@
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-12">
-                <h2 class="display-5 fw-bold" style="color: #5D2B4C; font-size: clamp(2rem, 4vw, 3rem);">Featured Products</h2>
+                <h2 class="display-5 fw-bold" style="color: #5D2B4C; font-size: clamp(2rem, 4vw, 3rem);">Best Seller Products</h2>
                 <p class="lead" style="color: #6c757d; font-size: clamp(1rem, 2vw, 1.25rem);">Explore our most popular floral arrangements.</p>
                 <button class="btn btn-lg fw-semibold text-white" style="background: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;" data-bs-toggle="modal" data-bs-target="#loginModal">
                     View All Products
@@ -488,13 +488,11 @@
     </div>
 </section>
 
-<!-- Newsletter Section -->
 <section class="py-5" style="background: #F5EEE4;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-md-10 col-sm-12 text-center">
                 <h2 class="display-5 fw-bold mb-4" style="color: #5D2B4C; font-size: clamp(2rem, 4vw, 3rem);">Stay Updated</h2>
-                <p class="lead mb-4" style="color: #6c757d; font-size: clamp(1rem, 2vw, 1.25rem);">Subscribe to our newsletter for exclusive offers, flower care tips, and seasonal updates.</p>
 
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-sm-12">

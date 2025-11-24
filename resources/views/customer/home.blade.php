@@ -11,7 +11,7 @@
                 <div class="d-flex gap-3 flex-wrap">
                   
                     <a href="{{ route('occasions.index') }}" class="btn btn-lg fw-semibold" style="background: #F5EEE4; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
-                        <i class="fas fa-calendar-alt me-2"></i>Book Event
+                        <i class="fas fa-calendar-alt me-2"></i>Schedule Event
                     </a>
                 </div>
             </div>
@@ -93,7 +93,7 @@
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-12">
-                <h2 class="display-5 fw-bold" style="color: #5D2B4C; font-size: clamp(2rem, 4vw, 3rem);">Featured Products</h2>
+                <h2 class="display-5 fw-bold" style="color: #5D2B4C; font-size: clamp(2rem, 4vw, 3rem);">Best Seller Products</h2>
                 <p class="lead" style="color: #6c757d; font-size: clamp(1rem, 2vw, 1.25rem);">Explore our most popular floral arrangements.</p>
                 <a href="{{ route('products.index') }}" class="btn btn-lg fw-semibold text-white" style="background: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
                     View All Products
@@ -151,7 +151,7 @@
             </div>
             @empty
             <div class="col-12 text-center">
-                <p class="text-muted">No featured products available at the moment.</p>
+                <p class="text-muted">No Best Seller Product available at the moment.</p>
             </div>
             @endforelse
         </div>
@@ -247,11 +247,11 @@
                 <p class="lead text-white mb-4" style="font-size: clamp(1rem, 2.5vw, 1.25rem);">Start shopping now or book your special event with our expert florists.</p>
                     @auth
                         <a href="{{ route('bookings.create') }}" class="btn btn-lg fw-semibold" style="background: white; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
-                            <i class="fas fa-calendar-plus me-2"></i>Book Event
+                            <i class="fas fa-calendar-plus me-2"></i>Schedule Event
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-lg fw-semibold" style="background: white; color: #5D2B4C; border-radius: 12px; padding: 15px 30px; white-space: nowrap;">
-                            <i class="fas fa-calendar-plus me-2"></i>Book Event
+                            <i class="fas fa-calendar-plus me-2"></i>Schedule Event
                         </a>
                     @endauth
                 </div>

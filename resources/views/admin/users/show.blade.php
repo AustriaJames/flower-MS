@@ -238,10 +238,7 @@
                             <form method="POST" action="{{ route('admin.users.toggle-admin', $user) }}" class="d-inline">
                                 @csrf
                                 @method('PATCH')
-                                <button type="submit" class="btn btn-{{ $user->is_admin ? 'outline-danger' : 'danger' }} w-100">
-                                    <i class="fas fa-{{ $user->is_admin ? 'user-minus' : 'user-shield' }} me-2"></i>
-                                    {{ $user->is_admin ? 'Remove Admin' : 'Make Admin' }}
-                                </button>
+                            
                             </form>
 
                             <button type="button" class="btn btn-warning w-100" data-bs-toggle="modal"

@@ -33,9 +33,7 @@
                             <span class="badge {{ $chat->status_badge_class }}">
                                 {{ ucfirst(str_replace('_', ' ', $chat->status)) }}
                             </span>
-                            <span class="badge {{ $chat->priority_badge_class }}">
-                                {{ ucfirst($chat->priority) }}
-                            </span>
+                            
                         </div>
                     </div>
                 </div>

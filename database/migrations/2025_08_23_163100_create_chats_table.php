@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('subject');
             $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open');
-            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
             $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('assigned_at')->nullable();
             $table->timestamp('resolved_at')->nullable();
@@ -26,7 +25,6 @@ return new class extends Migration
             $table->text('customer_notes')->nullable();
             $table->timestamps();
 
-            $table->index(['status', 'priority']);
             $table->index(['assigned_to', 'status']);
         });
     }

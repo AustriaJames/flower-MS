@@ -148,11 +148,7 @@ class User extends Authenticatable
     /**
      * Get the newsletter subscription for the user.
      */
-    public function newsletterSubscription(): HasMany
-    {
-        return $this->hasMany(NewsletterSubscription::class, 'email', 'email');
-    }
-
+    
     /**
      * Check if the user has a specific product in their wishlist.
      */

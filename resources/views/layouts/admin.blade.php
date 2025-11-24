@@ -110,12 +110,17 @@
             background: white;
             border-bottom: 1px solid #e2e8f0;
             padding: 15px 0;
+            transition: left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .main-content .top-navbar {
+            left: 0;
         }
 
         /* Responsive adjustments for fixed navbar */
         @media (max-width: 768px) {
             .top-navbar {
-                left: 0;
+                left: 0 !important;
             }
 
             .main-content {
@@ -139,6 +144,39 @@
             height: 100vh;
             width: var(--sidebar-width);
             z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        /* Sidebar Toggle Button */
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1050;
+            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: left 0.3s ease;
+        }
+
+        .sidebar-toggle i {
+            font-size: 24px;
+        }
+
+        .sidebar.collapsed ~ .sidebar-toggle {
+            left: 20px;
+        }
+
+        .sidebar:not(.collapsed) ~ .sidebar-toggle {
+            left: calc(var(--sidebar-width) + 20px);
         }
 
         .sidebar .nav-link {
@@ -314,11 +352,10 @@
         }
 
         .btn:hover {
-            /* No animation */
         }
 
         .btn:active {
-            /* No animation */
+
         }
 
         .btn-sm {
@@ -783,6 +820,12 @@
             padding: 0;
             width: calc(100vw - var(--sidebar-width));
             padding-top: 80px; /* Add top padding for fixed navbar */
+            transition: margin-left 0.3s ease, width 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 0;
+            width: 100vw;
         }
 
         /*
@@ -995,7 +1038,15 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
-                display: none;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                left: 20px !important;
             }
 
             .main-content {
@@ -1003,8 +1054,8 @@
                 width: 100vw;
             }
 
-            .sidebar.show {
-                display: block;
+            .top-navbar {
+                left: 0 !important;
             }
 
             .btn-action-lg {
@@ -1045,8 +1096,10 @@
             display: none;
         }
 
-        /* Disable all animations and transitions globally except modals */
-        *:not(.modal):not(.modal *):not(.modal-backdrop), *:not(.modal):not(.modal *):not(.modal-backdrop)::before, *:not(.modal):not(.modal *):not(.modal-backdrop)::after {
+        /* Disable all animations and transitions globally except modals and sidebar */
+        *:not(.modal):not(.modal *):not(.modal-backdrop):not(.sidebar):not(.sidebar-toggle):not(.main-content):not(.top-navbar), 
+        *:not(.modal):not(.modal *):not(.modal-backdrop):not(.sidebar):not(.sidebar-toggle):not(.main-content):not(.top-navbar)::before, 
+        *:not(.modal):not(.modal *):not(.modal-backdrop):not(.sidebar):not(.sidebar-toggle):not(.main-content):not(.top-navbar)::after {
             animation-duration: 0s !important;
             animation-delay: 0s !important;
             transition-duration: 0s !important;
@@ -1131,8 +1184,13 @@
 </head>
 
 <body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle btn btn-primary" id="sidebarToggle" aria-label="Toggle Sidebar">
+        <i class="bi bi-list"></i>
+    </button>
+
     <!-- Sidebar -->
-    <nav class="sidebar bg-dark text-white vh-100 p-3">
+    <nav class="sidebar bg-dark text-white vh-100 p-3" id="sidebar">
         <!-- Brand -->
         <div class="sidebar-brand mb-4">
             <h4 class="d-flex align-items-center">
@@ -1204,39 +1262,39 @@
                 <a class="nav-link text-white {{ request()->routeIs('admin.reports.*') ? 'active bg-primary' : '' }}"
                     href="{{ route('admin.reports.sales') }}">
                     <i class="bi bi-graph-up"></i> Reports
-                                </a>
-                            </li>
+                </a>
+            </li>
         </ul>
-                    </nav>
+    </nav>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- Top Navigation (User Dropdown only) -->
         <div class="top-navbar d-flex justify-content-end align-items-center py-3 border-bottom px-4">
-                    <div class="dropdown">
+            <div class="dropdown">
                 <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person"></i>{{ Auth::user()->name }}
-                        </button>
+                </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{{ route('home') }}">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('home') }}">
                             <i class="bi bi-house"></i>View Site
-                                </a>
-                            </li>
+                        </a>
+                    </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                    @csrf
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                            @csrf
                             <button type="submit" class="dropdown-item text-danger w-100 text-start">
                                 <i class="bi bi-box-arrow-right"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <!-- Page Header (Title + Breadcrumb) -->
         <div class="py-3 px-4">
@@ -1251,28 +1309,28 @@
                     @endif
                 </ol>
             </nav>
+        </div>
+
+        <!-- Flash Messages -->
+        @if (session('success'))
+        <div class="px-4">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+        </div>
+        @endif
 
-            <!-- Flash Messages -->
-            @if (session('success'))
-            <div class="px-4">
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle"></i>{{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                </div>
-            @endif
+        @if (session('error'))
+        <div class="px-4">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-circle"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+        @endif
 
-            @if (session('error'))
-            <div class="px-4">
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-circle"></i>{{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                </div>
-            @endif
-
-            <!-- Page Content -->
+        <!-- Page Content -->
         <div class="px-4">
             @yield('content')
         </div>
@@ -1376,6 +1434,29 @@
 
         // Ensure dropdown functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    
+                    // Save state to localStorage
+                    if (sidebar.classList.contains('collapsed')) {
+                        localStorage.setItem('sidebarCollapsed', 'true');
+                    } else {
+                        localStorage.setItem('sidebarCollapsed', 'false');
+                    }
+                });
+
+                // Restore sidebar state on page load
+                const sidebarCollapsed = localStorage.getItem('sidebarCollapsed');
+                if (sidebarCollapsed === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+            }
+
             // Simple dropdown toggle functionality
             const userDropdown = document.getElementById('userDropdown');
             const dropdownMenu = document.querySelector('.dropdown-menu');

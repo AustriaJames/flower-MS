@@ -32,16 +32,7 @@
                     <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <label for="priority" class="form-label">Priority</label>
-                <select name="priority" id="priority" class="form-select">
-                    <option value="">All Priorities</option>
-                    <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                    <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
-                    <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
-                    <option value="urgent" {{ request('priority') == 'urgent' ? 'selected' : '' }}>Urgent</option>
-                </select>
-            </div>
+    
             <div class="col-md-3">
                 <label for="assigned_to" class="form-label">Assigned To</label>
                 <select name="assigned_to" id="assigned_to" class="form-select">
@@ -61,7 +52,7 @@
                     </button>
                     <a href="{{ route('admin.chats.index') }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-clockwise"></i> Reset
-                    </a>
+                    </a>    
                 </div>
             </div>
         </form>
@@ -87,9 +78,6 @@
                                         <div class="d-flex gap-1">
                                             <span class="badge {{ $chat->status_badge_class }}">
                                                 {{ ucfirst(str_replace('_', ' ', $chat->status)) }}
-                                            </span>
-                                            <span class="badge {{ $chat->priority_badge_class }}">
-                                                {{ ucfirst($chat->priority) }}
                                             </span>
                                         </div>
                                     </div>

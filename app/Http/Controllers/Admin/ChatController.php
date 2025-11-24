@@ -24,9 +24,7 @@ class ChatController extends Controller
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('priority')) {
-            $query->where('priority', $request->priority);
-        }
+     
 
         if ($request->filled('assigned_to')) {
             $query->where('assigned_to', $request->assigned_to);

@@ -12,9 +12,7 @@
                 <p class="text-muted mb-0">Manage and moderate customer product reviews</p>
             </div>
             <div>
-                <a href="{{ route('admin.reviews.export') }}" class="btn btn-success">
-                    <i class="bi bi-download"></i> Export
-                </a>
+              
             </div>
         </div>
     </div>
@@ -22,16 +20,7 @@
     <!-- Search and Filters -->
     <div class="search-filters">
         <form method="GET" action="{{ route('admin.reviews.index') }}" class="row g-3">
-            <div class="col-md-3">
-                <label for="status" class="form-label">Status</label>
-                <select name="status" id="status" class="form-select">
-                    <option value="">All Statuses</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                </select>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="rating" class="form-label">Rating</label>
                 <select name="rating" id="rating" class="form-select">
                     <option value="">All Ratings</option>
@@ -42,7 +31,7 @@
                     <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>5 Stars</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="product_id" class="form-label">Product</label>
                 <select name="product_id" id="product_id" class="form-select">
                     <option value="">All Products</option>
@@ -53,7 +42,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label class="form-label">&nbsp;</label>
                 <div>
                     <button type="submit" class="btn btn-primary">
@@ -65,36 +54,6 @@
                 </div>
             </div>
         </form>
-    </div>
-
-    <!-- Bulk Actions -->
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            <form id="bulkActionForm" action="{{ route('admin.reviews.bulk-action') }}" method="POST">
-                @csrf
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center">
-                            <input type="checkbox" id="selectAll" class="form-check-input me-2">
-                            <label for="selectAll" class="form-check-label mb-0">Select All</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <select name="action" class="form-select" required>
-                            <option value="">Choose Action</option>
-                            <option value="approve">Approve Selected</option>
-                            <option value="reject">Reject Selected</option>
-                            <option value="delete">Delete Selected</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary" id="bulkActionBtn" disabled>
-                            <i class="bi bi-check-circle"></i> Apply Action
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
 
     <!-- Reviews Table -->
@@ -109,14 +68,10 @@
                         <table id="reviewsTable" class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th width="50">
-                                        <input type="checkbox" id="selectAllHeader" class="form-check-input">
-                                    </th>
                                     <th>Customer</th>
                                     <th>Product</th>
                                     <th>Rating</th>
                                     <th>Comment</th>
-                                    <th>Status</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
@@ -124,10 +79,6 @@
                             <tbody>
                                 @foreach($reviews as $review)
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="reviews[]" value="{{ $review->id }}"
-                                                   class="form-check-input review-checkbox">
-                                        </td>
                                         <td>
                                             <div>
                                                 <strong>{{ $review->user->name ?? 'Guest' }}</strong><br>
@@ -156,11 +107,6 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge {{ $review->status_badge_class }}">
-                                                {{ ucfirst($review->status) }}
-                                            </span>
-                                        </td>
-                                        <td>
                                             <small class="text-muted">{{ $review->created_at->format('M d, Y') }}</small>
                                         </td>
                                         <td>
@@ -173,16 +119,6 @@
                                                    class="btn btn-action btn-warning btn-action-sm" title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                @if($review->status === 'pending')
-                                                    <button type="button" class="btn btn-action btn-success btn-action-sm"
-                                                            title="Approve" onclick="approveReview({{ $review->id }})">
-                                                        <i class="bi bi-check-circle"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-action btn-danger btn-action-sm"
-                                                            title="Reject" onclick="rejectReview({{ $review->id }})">
-                                                        <i class="bi bi-x-circle"></i>
-                                                    </button>
-                                                @endif
                                                 <button type="button" class="btn btn-action btn-danger btn-action-sm"
                                                         title="Delete" onclick="deleteReview({{ $review->id }})">
                                                     <i class="bi bi-trash"></i>
@@ -194,8 +130,6 @@
                             </tbody>
                         </table>
                     </div>
-
-
                 @else
                     <div class="empty-state">
                         <i class="bi bi-star"></i>
@@ -204,34 +138,6 @@
                     </div>
                 @endif
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Reject Review Modal -->
-<div class="modal fade" id="rejectReviewModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Reject Review</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="rejectReviewForm" method="POST">
-                @csrf
-                @method('PATCH')
-                <div class="modal-body">
-                    <p>Are you sure you want to reject this review?</p>
-                    <div class="mb-3">
-                        <label for="rejection_reason" class="form-label">Reason for Rejection *</label>
-                        <textarea name="rejection_reason" id="rejection_reason" class="form-control"
-                                  rows="3" placeholder="Please provide a reason for rejection..." required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Reject Review</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -281,9 +187,9 @@ $(document).ready(function() {
             'copy', 'csv', 'excel', 'pdf', 'print'
         ],
         pageLength: 25,
-        order: [[6, 'desc']], // Sort by date by default
+        order: [[4, 'desc']], // Sort by date by default
         columnDefs: [
-            { orderable: false, targets: [0, 7] } // Disable sorting for checkbox and actions columns
+            { orderable: false, targets: [5] } // Disable sorting for actions column
         ],
         language: {
             search: "Search reviews:",
@@ -298,78 +204,6 @@ $(document).ready(function() {
         }
     });
 });
-
-// Select all functionality
-document.getElementById('selectAll').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.review-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-    });
-    updateBulkActionButton();
-});
-
-document.getElementById('selectAllHeader').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.review-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-    });
-    document.getElementById('selectAll').checked = this.checked;
-    updateBulkActionButton();
-});
-
-// Individual checkbox change
-document.addEventListener('change', function(e) {
-    if (e.target.classList.contains('review-checkbox')) {
-        updateBulkActionButton();
-        updateSelectAllCheckboxes();
-    }
-});
-
-function updateBulkActionButton() {
-    const checkedBoxes = document.querySelectorAll('.review-checkbox:checked');
-    const bulkActionBtn = document.getElementById('bulkActionBtn');
-    bulkActionBtn.disabled = checkedBoxes.length === 0;
-}
-
-function updateSelectAllCheckboxes() {
-    const checkedBoxes = document.querySelectorAll('.review-checkbox:checked');
-    const totalBoxes = document.querySelectorAll('.review-checkbox');
-    const selectAllCheckbox = document.getElementById('selectAll');
-    const selectAllHeaderCheckbox = document.getElementById('selectAllHeader');
-
-    selectAllCheckbox.checked = checkedBoxes.length === totalBoxes.length;
-    selectAllHeaderCheckbox.checked = checkedBoxes.length === totalBoxes.length;
-}
-
-function approveReview(reviewId) {
-    if (confirm('Are you sure you want to approve this review?')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/admin/reviews/${reviewId}/approve`;
-
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-
-        const method = document.createElement('input');
-        method.type = 'hidden';
-        method.name = '_method';
-        method.value = 'PATCH';
-
-        form.appendChild(csrfToken);
-        form.appendChild(method);
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
-
-function rejectReview(reviewId) {
-    const modal = new bootstrap.Modal(document.getElementById('rejectReviewModal'));
-    const form = document.getElementById('rejectReviewForm');
-    form.action = `/admin/reviews/${reviewId}/reject`;
-    modal.show();
-}
 
 function deleteReview(reviewId) {
     const modal = new bootstrap.Modal(document.getElementById('deleteReviewModal'));
