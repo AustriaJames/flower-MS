@@ -4,6 +4,19 @@
 
 @section('content')
 <div class="container-fluid">
+    @if(session('error'))
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Product Creation Failed',
+                    html: `<div style='text-align:left;'>{{ session('error') }}</div>`,
+                    confirmButtonText: 'OK',
+                });
+            });
+        </script>
+    @endif
     <!-- Page Header -->
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center">

@@ -14,24 +14,21 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
+            'order_id' => 'required|exists:orders,id',
+            'order_item_id' => 'required|exists:order_items,id',
             'rating' => 'required|integer|between:1,5',
             'comment' => 'required|string|max:1000'
         ]);
 
-        // Check if user has already reviewed this product
-        $existingReview = Review::where('user_id', Auth::id())
-            ->where('product_id', $request->product_id)
-            ->first();
-
-        if ($existingReview) {
-            return redirect()->back()->with('error', 'You have already reviewed this product.');
-        }
-
+        // Allow multiple reviews per product as long as from different orders/order items
         Review::create([
             'user_id' => Auth::id(),
             'product_id' => $request->product_id,
+            'order_id' => $request->order_id,
+            'order_item_id' => $request->order_item_id,
             'rating' => $request->rating,
             'comment' => $request->comment,
             'status' => 'pending'
@@ -91,7 +88,8 @@ class ReviewController extends Controller
      */
     private function updateProductRating($productId)
     {
-        $reviews = Review::where('product_id', $productId)->approved();
+        // Consider all reviews (including pending) so product rating reflects recent submissions
+        $reviews = Review::where('product_id', $productId);
         $avgRating = $reviews->avg('rating');
         $reviewCount = $reviews->count();
         

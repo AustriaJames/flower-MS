@@ -1,3 +1,16 @@
+                        @php
+                            $isPickup = $order->delivery_type === 'pickup';
+                        @endphp
+                        @if($isPickup)
+                        <form method="POST" action="{{ route('admin.orders.update-status', $order) }}">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="delivered">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-check me-2"></i>Mark as Delivered
+                            </button>
+                        </form>
+                        @endif
 @extends('layouts.admin')
 
 @section('page-title', 'Order Details')
@@ -31,6 +44,7 @@
                                 'confirmed' => 'info',
                                 'processing' => 'primary',
                                 'shipped' => 'info',
+                                'ready_for_pickup' => 'success',
                                 'delivered' => 'success',
                                 'cancelled' => 'danger'
                             ];
@@ -43,7 +57,8 @@
                                 $displayStatus = match($order->status) {
                                     'confirmed' => 'Approved',
                                     'processing' => 'For Preparation',
-                                    'delivered' => 'Ready for Pickup',
+                                    'ready_for_pickup' => 'Ready for Pick Up',
+                                    'delivered' => 'Delivered',
                                     default => ucfirst($order->status),
                                 };
                             } else {
@@ -331,30 +346,43 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <div class="dropdown">
+                        <div class="dropdown mb-2">
                             <button class="btn btn-primary dropdown-toggle w-100" type="button" onclick="toggleOrderStatusDropdown(this)">
                                 <i class="fas fa-tasks me-2"></i>Update Status
                             </button>
                             <ul class="dropdown-menu w-100">
+                                
                                 @php
-                                    $allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+                                    $allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'ready_for_pickup', 'delivered', 'cancelled'];
                                 @endphp
+                                @php $debugStatuses = []; @endphp
                                 @foreach($allStatuses as $status)
-                                    @if($status === $order->status)
-                                        @continue
-                                    @endif
                                     @php
-                                        $label = ucfirst($status);
-                                        if ($isPickup) {
-                                            if ($status === 'shipped') continue;
-                                            $label = match($status) {
-                                                'confirmed' => 'Approved',
-                                                'processing' => 'For Preparation',
-                                                'delivered' => 'Ready for Pickup',
-                                                default => ucfirst($status),
-                                            };
+                                        $show = true;
+                                        // Friendly labels for statuses
+                                        $statusLabels = [
+                                            'pending' => 'Pending',
+                                            'confirmed' => 'Approved',
+                                            'processing' => 'For Preparation',
+                                            'shipped' => 'Shipped',
+                                            'ready_for_pickup' => 'Ready for Pick Up',
+                                            'delivered' => 'Delivered',
+                                            'cancelled' => 'Cancelled',
+                                        ];
+                                        $label = $statusLabels[$status] ?? ucfirst(str_replace('_', ' ', $status));
+                                        if ($status === $order->status && $status !== 'cancelled') {
+                                            $show = false;
                                         }
+                                        // Hide 'ready_for_pickup' for delivery orders
+                                        if ($status === 'ready_for_pickup' && !$isPickup) {
+                                            $show = false;
+                                        }
+                                        if ($isPickup) {
+                                            if ($status === 'shipped') { $show = false; }
+                                        }
+                                        if ($show) { $debugStatuses[] = $label; }
                                     @endphp
+                                    @if($show)
                                     <li>
                                         <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-inline">
                                             @csrf
@@ -365,9 +393,38 @@
                                             </button>
                                         </form>
                                     </li>
+                                    @endif
                                 @endforeach
+                                {{-- Only show extra Ready for Pickup quick action for pickup orders --}}
+                                @if($isPickup)
+                                    <li>
+                                        <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="ready_for_pickup">
+                                            <button type="submit" class="dropdown-item">
+                                                Mark as Ready for Pick Up
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endif
+
                             </ul>
                         </div>
+
+                        @php
+                            $isPickup = $order->delivery_type === 'pickup';
+                        @endphp
+                        @if($isPickup)
+                        <form method="POST" action="{{ route('admin.orders.update-status', $order) }}">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="delivered">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-check me-2"></i>Mark as Delivered
+                            </button>
+                        </form>
+                        @endif
 
                         @if($order->cancellation_requested && $order->status === 'confirmed')
                             <div class="alert alert-warning mb-3">

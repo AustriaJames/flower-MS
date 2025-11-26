@@ -25,8 +25,33 @@
                             <p><strong>Tracking Number:</strong> {{ $order->tracking_number ?? 'Not assigned yet' }}</p>
                             <p><strong>Order Date:</strong> {{ $order->created_at->format('M d, Y \a\t g:i A') }}</p>
                             <p><strong>Status:</strong>
-                                <span class="badge bg-{{ $order->status === 'delivered' ? 'success' : ($order->status === 'processing' ? 'warning' : 'info') }} fs-6">
-                                    {{ ucfirst($order->status) }}
+                                @php
+                                    $isPickup = $order->delivery_type === 'pickup';
+                                    $displayStatus = $order->status;
+                                    if ($isPickup) {
+                                        $displayStatus = match($order->status) {
+                                            'confirmed' => 'Approved',
+                                            'processing' => 'For Preparation',
+                                            'ready_for_pickup' => 'Ready for Pick Up',
+                                            'delivered' => 'Delivered',
+                                            default => ucfirst(str_replace('_', ' ', $order->status)),
+                                        };
+                                    } else {
+                                        $displayStatus = ucfirst(str_replace('_', ' ', $order->status));
+                                    }
+                                    $statusColor = match($order->status) {
+                                        'pending' => 'warning',
+                                        'confirmed' => 'info',
+                                        'processing' => 'primary',
+                                        'shipped' => 'info',
+                                        'ready_for_pickup' => 'success',
+                                        'delivered' => 'success',
+                                        'cancelled' => 'danger',
+                                        default => 'secondary',
+                                    };
+                                @endphp
+                                <span class="badge bg-{{ $statusColor }} fs-6">
+                                    {{ $displayStatus }}
                                 </span>
                             </p>
                         </div>
@@ -219,7 +244,7 @@
                 <div class="alert alert-secondary">
                     <i class="fas fa-info-circle me-2"></i>
                     <strong>Order Details:</strong><br>
-                    <small>Order #{{ $order->order_number }} - {{ ucfirst($order->status) }}</small>
+                    <small>Order #{{ $order->order_number }} - {{ $displayStatus }}</small>
                 </div>
             </div>
             <div class="modal-footer">

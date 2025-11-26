@@ -186,7 +186,32 @@
                             <h5 class="fw-bold mb-3" style="color: #5D2B4C;">Contact Information</h5>
                             <div class="mb-3">
                                 <label for="venue_address" class="form-label fw-bold">Venue Address *</label>
-                                <textarea class="form-control" id="venue_address" name="venue_address" rows="2" placeholder="Complete venue address" required></textarea>
+                                <select class="form-select" id="venue_address" name="venue_address" required>
+                                    <option value="">Select city/municipality</option>
+                                    <option value="Bacoor City">Bacoor City</option>
+                                    <option value="Cavite City">Cavite City</option>
+                                    <option value="Dasmariñas City">Dasmariñas City</option>
+                                    <option value="General Trias City">General Trias City</option>
+                                    <option value="Imus City">Imus City</option>
+                                    <option value="Tagaytay City">Tagaytay City</option>
+                                    <option value="Trece Martires City">Trece Martires City</option>
+                                    <option value="Alfonso">Alfonso</option>
+                                    <option value="Amadeo">Amadeo</option>
+                                    <option value="Carmona">Carmona</option>
+                                    <option value="Gen. Emilio Aguinaldo">Gen. Emilio Aguinaldo</option>
+                                    <option value="Gen. Mariano Alvarez">Gen. Mariano Alvarez</option>
+                                    <option value="Indang">Indang</option>
+                                    <option value="Kawit">Kawit</option>
+                                    <option value="Magallanes">Magallanes</option>
+                                    <option value="Maragondon">Maragondon</option>
+                                    <option value="Mendez-Nuñez">Mendez-Nuñez</option>
+                                    <option value="Naic">Naic</option>
+                                    <option value="Noveleta">Noveleta</option>
+                                    <option value="Rosario">Rosario</option>
+                                    <option value="Silang">Silang</option>
+                                    <option value="Tanza">Tanza</option>
+                                    <option value="Ternate">Ternate</option>
+                                </select>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -198,9 +223,15 @@
                                     <input type="tel" class="form-control" id="contact_phone" name="contact_phone" value="{{ auth()->user()->phone ?? '' }}" required>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="contact_email" class="form-label fw-bold">Contact Email *</label>
-                                <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ auth()->user()->email ?? '' }}" required>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="contact_email" class="form-label fw-bold">Contact Email *</label>
+                                    <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ auth()->user()->email ?? '' }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="postal_id" class="form-label fw-bold">Postal ID *</label>
+                                    <input type="text" class="form-control" id="postal_id" name="postal_id" maxlength="20" required placeholder="Enter Postal ID">
+                                </div>
                             </div>
                         </div>
 
@@ -344,6 +375,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const eventDate = new Date(eventDateInput.value);
         const today = new Date();
+        // Set both dates to midnight for accurate day difference
+        eventDate.setHours(0,0,0,0);
+        today.setHours(0,0,0,0);
         const daysDifference = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
 
         if (daysDifference < 7) {

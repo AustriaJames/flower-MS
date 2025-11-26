@@ -47,6 +47,8 @@ class BookingController extends Controller
             'venue_address' => 'required|string|max:500',
             'contact_person' => 'required|string|max:100',
             'contact_phone' => 'required|string|max:20',
+            'contact_email' => 'required|email',
+            'postal_id' => 'required|string|max:20',
             'special_requirements' => 'nullable|string|max:1000',
             'budget_range' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
@@ -60,7 +62,7 @@ class BookingController extends Controller
         $booking = Booking::create([
             'user_id' => Auth::id(),
             'customer_name' => $user->first_name . ' ' . $user->last_name,
-            'customer_email' => $user->email,
+            'customer_email' => $request->contact_email,
             'customer_phone' => $user->phone ?? $request->contact_phone,
             'event_type' => $request->event_type,
             'event_date' => $request->event_date,
@@ -69,6 +71,7 @@ class BookingController extends Controller
             'venue_address' => $request->venue_address,
             'contact_person' => $request->contact_person,
             'contact_phone' => $request->contact_phone,
+            'postal_id' => $request->postal_id,
             'special_requirements' => $request->special_requirements,
             'budget_range' => $request->budget_range,
             'category_id' => $request->category_id,
@@ -135,17 +138,18 @@ class BookingController extends Controller
     public function destroy(Booking $booking)
     {
         if ($booking->user_id !== Auth::id()) {
-            abort(403);
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
         if ($booking->status !== 'pending') {
-            return redirect()->back()->with('error', 'Cannot cancel confirmed or completed bookings.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Only pending bookings can be cancelled. If you believe this is an error, please refresh the page.'
+            ], 400);
         }
 
         $booking->delete();
-
-        return redirect()->route('bookings.index')
-            ->with('success', 'Booking cancelled successfully!');
+        return response()->json(['success' => true]);
     }
 
     private function sendBookingCreatedEmail(Booking $booking): void

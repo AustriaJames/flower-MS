@@ -1,4 +1,7 @@
+
 <?php
+// Combined Orders & Bookings page
+Route::middleware(['auth'])->get('/my-orders-bookings', [\App\Http\Controllers\OrdersBookingsController::class, 'index'])->name('orders_bookings.index');
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -101,6 +104,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    // Customer order review routes (leave reviews for delivered orders)
+    Route::get('/orders/{order}/review', [OrderController::class, 'review'])->name('orders.review');
+    Route::post('/orders/{order}/review', [OrderController::class, 'submitReviews'])->name('orders.submitReviews');
 
     // Chat routes
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

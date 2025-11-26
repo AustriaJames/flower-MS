@@ -1,42 +1,35 @@
 @extends('layouts.app')
 
-@push('styles')
-<style>
-.rating-input {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    gap: 5px;
-}
-
-.rating-input input[type="radio"] {
-    display: none;
-}
-
-.rating-input label {
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: #ddd;
-    transition: color 0.2s;
-}
-
-.rating-input label:hover,
-.rating-input label:hover ~ label,
-.rating-input input[type="radio"]:checked ~ label {
-    color: #ffc107;
-}
-
-.rating-input input[type="radio"]:checked ~ label i {
-    font-weight: 900;
-}
-
-.rating-input label i {
-    transition: all 0.2s;
-}
-</style>
-@endpush
 
 @section('content')
+        @if(session('success'))
+        <!-- Review Success Modal -->
+        <div class="modal fade" id="reviewSuccessModal" tabindex="-1" aria-labelledby="reviewSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reviewSuccessModalLabel">Review Submitted</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <p class="mb-0">Review done! Please wait for the admin to confirm your review.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var modal = new bootstrap.Modal(document.getElementById('reviewSuccessModal'));
+                modal.show();
+            });
+        </script>
+        @endif
 <div class="container py-5">
     <div class="row">
         <!-- Product Images -->
@@ -66,7 +59,7 @@
                                 <i class="far fa-star text-warning"></i>
                             @endif
                         @endfor
-                        <span class="ms-2 text-muted">({{ $product->reviews->count() }} reviews)</span>
+                        <span class="ms-2 text-muted">({{ $product->reviews->where('status', 'approved')->count() }} reviews)</span>
                     </div>
 
                     <h3 class="fw-bold mb-4" style="color: #5D2B4C;">₱{{ number_format($product->price, 2) }}</h3>
@@ -125,7 +118,7 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" style="color: #5D2B4C;">
-                                <i class="fas fa-star me-2"></i>Reviews ({{ $product->reviews->count() }})
+                                <i class="fas fa-star me-2"></i>Reviews ({{ $product->reviews->where('status', 'approved')->count() }})
                             </button>
                         </li>
                     </ul>
@@ -152,69 +145,33 @@
 
                         <!-- Reviews Tab -->
                         <div class="tab-pane fade" id="reviews" role="tabpanel">
-                            @auth
-                            <!-- Add Review Form -->
+                            <!-- All Reviews Section -->
                             @php
-                                $userHasReviewed = $product->reviews->where('user_id', auth()->id())->count() > 0;
+                                $approvedReviews = $product->reviews->where('status', 'approved');
                             @endphp
-                            
-                            @if(!$userHasReviewed)
-                            <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
-                                <div class="card-body">
-                                    <h6 class="fw-semibold mb-3" style="color: #5D2B4C;">Write a Review</h6>
-                                    <form action="{{ route('reviews.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Rating</label>
-                                            <div class="rating-input">
-                                                @for($i = 5; $i >= 1; $i--)
-                                                <input type="radio" name="rating" value="{{ $i }}" id="star{{ $i }}" required>
-                                                <label for="star{{ $i }}"><i class="far fa-star"></i></label>
-                                                @endfor
+                            <h5 class="fw-bold" style="color: #5D2B4C;">All Reviews</h5>
+                            @if($approvedReviews->count() > 0)
+                                @foreach($approvedReviews as $review)
+                                    <div class="border-bottom pb-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="fw-semibold mb-1">{{ $review->user->name }}</h6>
+                                                <div class="mb-1">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="{{ $i <= $review->rating ? 'fas' : 'far' }} fa-star text-warning"></i>
+                                                    @endfor
+                                                </div>
                                             </div>
+                                            <small class="text-muted">{{ $review->created_at->format('M d, Y') }}</small>
                                         </div>
-
-                                        <div class="mb-3">
-                                            <label for="comment" class="form-label">Comment</label>
-                                            <textarea class="form-control" name="comment" rows="3" required placeholder="Share your experience with this product..."></textarea>
-                                        </div>
-
-                                        <button type="submit" class="btn fw-semibold text-white" style="background: #5D2B4C; border-radius: 12px;">
-                                            <i class="fas fa-paper-plane me-2"></i>Submit Review
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            @else
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>You have already reviewed this product.
-                            </div>
-                            @endif
-                            @endauth
-
-                            <!-- Reviews List -->
-                            @if($product->reviews->count() > 0)
-                                @foreach($product->reviews as $review)
-                                <div class="border-bottom pb-3 mb-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h6 class="fw-semibold mb-1">{{ $review->user->name }}</h6>
-                                            <div class="mb-1">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= $review->rating)
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    @else
-                                                        <i class="far fa-star text-warning"></i>
-                                                    @endif
-                                                @endfor
+                                        <p class="mb-0">{{ $review->comment }}</p>
+                                        @if($review->admin_response)
+                                            <div class="bg-primary bg-opacity-10 p-2 rounded mt-2 ms-3">
+                                                <strong class="text-primary">Admin Reply:</strong>
+                                                <span>{{ $review->admin_response }}</span>
                                             </div>
-                                        </div>
-                                        <small class="text-muted">{{ $review->created_at->format('M d, Y') }}</small>
+                                        @endif
                                     </div>
-                                    <p class="mb-0">{{ $review->comment }}</p>
-                                </div>
                                 @endforeach
                             @else
                                 <p class="text-muted text-center py-3">No reviews yet. Be the first to review this product!</p>

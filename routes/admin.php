@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\ReportsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Admin initiate chat with user
+    Route::get('chats/initiate', [\App\Http\Controllers\Admin\ChatInitiateController::class, 'create'])->name('chats.initiate');
+    Route::post('chats/initiate', [\App\Http\Controllers\Admin\ChatInitiateController::class, 'store'])->name('chats.initiate.store');
 
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

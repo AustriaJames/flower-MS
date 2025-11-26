@@ -18,7 +18,11 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $orders = Order::with(['user', 'orderItems.product'])->latest()->get();
+        // Show 'pending' orders first, then others by order_date descending
+        $orders = Order::with(['user', 'orderItems.product'])
+            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->orderByDesc('order_date')
+            ->get();
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -39,14 +43,21 @@ class OrderController extends Controller
     {
         $order->load(['user', 'orderItems.product', 'shippingAddress', 'billingAddress']);
         $statuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
-
+        // Allow 'ready_for_pickup' for pickup orders
+        if ($order->delivery_type === 'pickup') {
+            array_splice($statuses, 4, 0, 'ready_for_pickup'); // Insert before 'delivered'
+        }
         return view('admin.orders.edit', compact('order', 'statuses'));
     }
 
     public function update(Request $request, Order $order)
     {
+        $allowedStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if ($order->delivery_type === 'pickup') {
+            array_splice($allowedStatuses, 4, 0, 'ready_for_pickup');
+        }
         $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled',
+            'status' => 'required|in:' . implode(',', $allowedStatuses),
             'notes' => 'nullable|string',
             'estimated_delivery' => 'nullable|date|after:today',
         ]);
@@ -56,7 +67,7 @@ class OrderController extends Controller
         // Shipping logic ONLY if order is for delivery
         if ($validated['status'] === 'shipped' 
             && !$order->tracking 
-            && $order->delivery_method === 'delivery') 
+            && $order->delivery_type === 'delivery') 
         {
             $order->tracking()->create([
                 'tracking_number' => 'TRK-' . strtoupper(uniqid()),
@@ -70,7 +81,7 @@ class OrderController extends Controller
 
         // Delivered logic ONLY for delivery orders
         if ($validated['status'] === 'delivered' 
-            && $order->delivery_method === 'delivery') 
+            && $order->delivery_type === 'delivery') 
         {
             $order->update(['delivered_at' => now()]);
         }
@@ -83,17 +94,31 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, Order $order)
     {
+        $allowedStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if ($order->delivery_type === 'pickup') {
+            array_splice($allowedStatuses, 4, 0, 'ready_for_pickup');
+        }
         $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled',
+            'status' => 'required|in:' . implode(',', $allowedStatuses),
         ]);
 
+
         $oldStatus = $order->status;
-        $order->update(['status' => $request->status]);
+
+        // If marking as delivered and order is pickup, set both status and delivered_at
+        if ($order->delivery_type === 'pickup' && $request->status === 'delivered') {
+            $order->update([
+                'status' => 'delivered',
+                'delivered_at' => now(),
+            ]);
+        } else {
+            $order->update(['status' => $request->status]);
+        }
 
         // Shipping logic ONLY if delivery order
         if ($request->status === 'shipped' 
             && !$order->tracking 
-            && $order->delivery_method === 'delivery') 
+            && $order->delivery_type === 'delivery') 
         {
             $order->tracking()->create([
                 'tracking_number' => 'TRK-' . strtoupper(uniqid()),
@@ -105,10 +130,9 @@ class OrderController extends Controller
             ]);
         }
 
-        // Delivered logic ONLY if delivery order
-        if ($request->status === 'delivered' 
-            && $order->delivery_method === 'delivery') 
-        {
+
+        // Delivered logic for both delivery and pickup orders (for delivery, set delivered_at)
+        if ($request->status === 'delivered' && $order->delivery_type === 'delivery') {
             $order->update(['delivered_at' => now()]);
         }
 

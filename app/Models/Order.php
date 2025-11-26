@@ -1,6 +1,6 @@
 <?php
-
 namespace App\Models;
+// ...existing use statements...
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +11,17 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Order extends Model
 {
     use HasFactory;
+
+    /**
+     * Check if the current user has reviewed all products in this order.
+     */
+    public function isFullyReviewedBy($userId)
+    {
+        // Check if there is at least one review for this order by this user
+        return \App\Models\Review::where('user_id', $userId)
+            ->where('order_id', $this->id)
+            ->exists();
+    }
 
     protected $fillable = [
         'order_number',
@@ -125,7 +136,7 @@ class Order extends Model
      */
     public function getIsCompletedAttribute()
     {
-        return in_array($this->status, ['delivered']);
+        return in_array($this->status, ['delivered', 'ready_for_pickup']);
     }
 
     /**
@@ -146,6 +157,7 @@ class Order extends Model
             'confirmed' => 'bg-info',
             'processing' => 'bg-primary',
             'shipped' => 'bg-info',
+            'ready_for_pickup' => 'bg-success',
             'delivered' => 'bg-success',
             'cancelled' => 'bg-danger',
             default => 'bg-secondary',

@@ -36,6 +36,7 @@
                             <p><strong>Name:</strong> {{ $booking->customer_name }}</p>
                             <p><strong>Email:</strong> {{ $booking->customer_email }}</p>
                             <p><strong>Phone:</strong> {{ $booking->customer_phone }}</p>
+                            <p><strong>Postal ID:</strong> {{ $booking->postal_id ?? '-' }}</p>
                         </div>
                         <div class="col-md-6">
                             <h6 class="text-muted">Event Details</h6>

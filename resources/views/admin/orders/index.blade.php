@@ -92,7 +92,22 @@
                                     ];
                                     $statusColor = $statusColors[$order->status] ?? 'secondary';
                                 @endphp
-                                <span class="badge bg-{{ $statusColor }}">{{ ucfirst($order->status) }}</span>
+                                @php
+                                    $isPickup = $order->delivery_type === 'pickup';
+                                    $displayStatus = $order->status;
+                                    if ($isPickup) {
+                                        $displayStatus = match($order->status) {
+                                            'confirmed' => 'Approved',
+                                            'processing' => 'For Preparation',
+                                            'ready_for_pickup' => 'Ready for Pickup',
+                                            'delivered' => 'Completed',
+                                            default => ucfirst($order->status),
+                                        };
+                                    } else {
+                                        $displayStatus = ucfirst($order->status);
+                                    }
+                                @endphp
+                                <span class="badge bg-{{ $statusColor }}">{{ $displayStatus }}</span>
                             </td>
                             <td>
                                 <strong class="text-success">₱{{ number_format($order->total_amount, 2) }}</strong>
@@ -168,10 +183,7 @@ $(document).ready(function() {
             'copy', 'csv', 'excel', 'pdf', 'print'
         ],
         pageLength: 25,
-        order: [[6, 'desc']], // Sort by order date by default
-        columnDefs: [
-            { orderable: false, targets: [0, 8] } // Disable sorting for checkbox and actions columns
-        ],
+        ordering: false, // Disable all ordering to preserve backend order
         language: {
             search: "Search orders:",
             lengthMenu: "Show _MENU_ orders per page",

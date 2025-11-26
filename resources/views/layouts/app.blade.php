@@ -364,19 +364,11 @@
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #5D2B4C;">
-                                <i class="fas fa-th-large me-1"></i>Flower Menu
+                                <i class="fas fa-th-large me-1"></i>Menu
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('products.index') }}">All Products</a></li>
+                                <li><a class="dropdown-item" href="{{ route('products.index') }}">All Products and Occasions</a></li>
                                 <li><a class="dropdown-item" href="{{ route('categories.index') }}">Categories</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #5D2B4C;">
-                                <i class="fas fa-calendar-alt me-1"></i>Occasions
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('occasions.index') }}">All Occasions</a></li>
                                 @auth
                                     <li><a class="dropdown-item" href="{{ route('bookings.create') }}">Schedule Event</a></li>
                                 @else
@@ -385,15 +377,14 @@
                             </ul>
                         </li>
                         @auth
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="{{ route('orders.index') }}" style="color: #5D2B4C;">
-                                <i class="fas fa-shopping-bag me-1"></i>My Orders
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-semibold" href="#" id="ordersBookingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #5D2B4C;">
+                                <i class="fas fa-folder-open me-1"></i>My Orders & Bookings
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="{{ route('bookings.index') }}" style="color: #5D2B4C;">
-                                <i class="fas fa-calendar-check me-1"></i>My Bookings
-                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="ordersBookingsDropdown">
+                                <li><a class="dropdown-item" href="{{ route('orders.index') }}"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
+                                <li><a class="dropdown-item" href="{{ route('bookings.index') }}"><i class="fas fa-calendar-alt me-2"></i>My Bookings</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fw-semibold" href="{{ route('wishlist.index') }}" style="color: #5D2B4C;">
@@ -432,8 +423,7 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
-                                        <li><a class="dropdown-item" href="{{ route('orders.index') }}"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
-                                        <li><a class="dropdown-item" href="{{ route('bookings.index') }}"><i class="fas fa-calendar-check me-2"></i>My Bookings</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('orders_bookings.index') }}"><i class="fas fa-folder-open me-2"></i>My Orders & Bookings</a></li>
                                         <li><a class="dropdown-item" href="{{ route('wishlist.index') }}"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li>

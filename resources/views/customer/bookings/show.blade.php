@@ -309,7 +309,7 @@ function cancelBooking(bookingId) {
                         icon: 'success',
                         title: 'Cancelled',
                         text: 'Booking cancelled successfully.',
-                    }).then(() => location.reload());
+                    }).then(() => window.location.href = '/bookings');
                 } else {
                     Swal.fire({
                         icon: 'error',

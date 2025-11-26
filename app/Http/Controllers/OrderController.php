@@ -75,6 +75,100 @@ class OrderController extends Controller
     }
 
     /**
+     * Show review form for delivered orders.
+     */
+    public function review(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'delivered') {
+            return redirect()->back()->with('warning', 'You can only review items from delivered orders.');
+        }
+
+        $order->load('orderItems.product');
+
+        return view('customer.orders.review', compact('order'));
+    }
+
+    /**
+     * Submit reviews for products in an order.
+     */
+    public function submitReviews(Request $request, Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'delivered') {
+            return redirect()->back()->with('warning', 'You can only review items from delivered orders.');
+        }
+
+        $data = $request->validate([
+            'ratings' => 'required|array',
+            'ratings.*' => 'nullable|integer|between:1,5',
+            'comments' => 'nullable|array',
+            'comments.*' => 'nullable|string|max:1000',
+            'order_item_ids' => 'required|array',
+            'order_item_ids.*' => 'required|integer|exists:order_items,id'
+        ]);
+
+        foreach ($order->orderItems as $item) {
+            $productId = $item->product_id;
+            $orderItemId = $data['order_item_ids'][$productId] ?? null;
+            $rating = $data['ratings'][$productId] ?? null;
+            $comment = $data['comments'][$productId] ?? null;
+
+            if ($rating && $orderItemId) {
+                // Check existing review for this user, product, order, and order_item
+                $existing = \App\Models\Review::where('user_id', Auth::id())
+                    ->where('product_id', $productId)
+                    ->where('order_id', $order->id)
+                    ->where('order_item_id', $orderItemId)
+                    ->first();
+
+                if ($existing) {
+                    // update existing
+                    $existing->update(['rating' => $rating, 'comment' => $comment]);
+                } else {
+                    \App\Models\Review::create([
+                        'user_id' => Auth::id(),
+                        'product_id' => $productId,
+                        'order_id' => $order->id,
+                        'order_item_id' => $orderItemId,
+                        'rating' => $rating,
+                        'comment' => $comment,
+                        'status' => 'pending'
+                    ]);
+                }
+
+                // Update product average rating and review count using all reviews (include pending)
+                $reviews = \App\Models\Review::where('product_id', $productId);
+                $avgRating = $reviews->avg('rating');
+                $reviewCount = $reviews->count();
+
+                \App\Models\Product::where('id', $productId)->update([
+                    'rating' => $avgRating ? round($avgRating, 1) : 0,
+                    'review_count' => $reviewCount
+                ]);
+            }
+        }
+
+        // Mark order as reviewed (using is_reviewed boolean)
+        $order->is_reviewed = true;
+        $order->save();
+
+        // If order contains products, redirect to the first product's page so user can see the review
+        $firstItem = $order->orderItems->first();
+        if ($firstItem && $firstItem->product) {
+            return redirect()->route('products.show', $firstItem->product)->with('success', 'Thank you! Your reviews were submitted and are pending approval.');
+        }
+
+        return redirect()->route('orders.index')->with('success', 'Thank you! Your reviews were submitted and are pending approval.');
+    }
+
+    /**
      * Store a new order from cart.
      */
     public function store(Request $request)

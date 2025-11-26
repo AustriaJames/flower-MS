@@ -13,24 +13,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a test user
-        \App\Models\User::factory()->create([
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'email' => 'test@example.com',
-            'phone' => '+63 912 345 6789',
-            'password' => bcrypt('password'),
-        ]);
 
-        // Create an admin user
-        \App\Models\User::factory()->create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'email' => 'admin@bonasflowershop.com',
-            'phone' => '+63 912 345 6789',
-            'password' => bcrypt('admin123'),
-            'is_admin' => true,
-        ]);
+        // Always create a default admin user
+        \App\Models\User::updateOrCreate(
+            [ 'email' => 'admin@bonasflowershop.com' ],
+            [
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'phone' => '+63 912 345 6789',
+                'password' => bcrypt('admin123'),
+                'is_admin' => true,
+            ]
+        );
 
         // Seed categories and products
         $this->call([

@@ -68,6 +68,7 @@
                         </div>
                     </div>
 
+
                     @if($review->admin_response)
                         <hr>
                         <div class="row">
@@ -76,6 +77,23 @@
                                 <div class="bg-primary bg-opacity-10 p-3 rounded">
                                     <p class="mb-0">{{ $review->admin_response }}</p>
                                 </div>
+                            </div>
+                        </div>
+                    @else
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-muted">Reply to Review</h6>
+                                <form method="POST" action="{{ route('admin.reviews.reply', $review) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="mb-3">
+                                        <textarea name="admin_response" class="form-control" rows="3" placeholder="Write your reply..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-reply"></i> Submit Reply
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     @endif

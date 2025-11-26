@@ -15,24 +15,33 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        // Regular flower categories (non-occasion)
+        // Get all categories and add a 'type' property for unified display
         $regularCategories = Category::withCount('products')
             ->where(function ($query) {
                 $query->where('is_occasion', false)
-                      ->orWhereNull('is_occasion'); // Treat null as false
+                      ->orWhereNull('is_occasion');
             })
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function ($cat) {
+                $cat->type = 'Regular';
+                return $cat;
+            });
 
-        // Occasion categories
         $occasionCategories = Category::withCount('products')
             ->withCount('subCategories')
             ->where('is_occasion', true)
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function ($cat) {
+                $cat->type = 'Occasion';
+                return $cat;
+            });
 
-        return view('admin.categories.index', compact('regularCategories', 'occasionCategories'));
+        $categories = $regularCategories->concat($occasionCategories)->sortBy('name');
+
+        return view('admin.categories.index', compact('categories'));
     }
 
     /**

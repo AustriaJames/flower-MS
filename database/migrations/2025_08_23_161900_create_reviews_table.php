@@ -23,16 +23,17 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->foreignId('order_id')->nullable()->constrained()->onDelete('set null');
+            $table->unsignedBigInteger('order_item_id')->nullable();
 
             // Indexes
             $table->index('user_id');
             $table->index('product_id');
+            $table->index('order_id');
+            $table->index('order_item_id');
             $table->index('rating');
             $table->index('is_approved');
             $table->index('is_verified_purchase');
-
-            // Unique constraint to prevent multiple reviews per user per product
-            $table->unique(['user_id', 'product_id']);
+            $table->unique(['user_id', 'product_id', 'order_id', 'order_item_id'], 'reviews_user_product_order_item_unique');
         });
     }
 

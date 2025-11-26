@@ -2,6 +2,22 @@
 
 @section('content')
 <div class="container py-5">
+    @php
+        $userId = auth()->id();
+        $orderDebug = $orders->map(function($o) use ($userId) {
+            $shouldShowReviewButton = $o->status === 'delivered';
+            $hasReviewed = $o->isFullyReviewedBy($userId);
+            return [
+                'order_number' => $o->order_number,
+                'id' => $o->id,
+                'delivery_type' => $o->delivery_type,
+                'status' => $o->status,
+                'shouldShowReviewButton' => $shouldShowReviewButton,
+                'hasReviewed' => $hasReviewed,
+            ];
+        });
+    @endphp
+
     <div class="row">
         <div class="col-12">
             <h2 class="fw-bold mb-4" style="color: #5D2B4C;">
@@ -24,8 +40,34 @@
                             <p class="text-muted small mb-0">{{ $order->orderItems->count() }} item(s)</p>
                         </div>
                         <div class="col-md-2">
-                            <span class="badge bg-{{ $order->status === 'delivered' ? 'success' : ($order->status === 'processing' ? 'warning' : ($order->status === 'cancelled' ? 'danger' : 'info')) }} fs-6">
-                                {{ ucfirst($order->status) }}
+                            @php
+                                $isPickup = $order->delivery_type === 'pickup';
+                                $displayStatus = $order->status;
+                                if ($isPickup) {
+                                    $displayStatus = match($order->status) {
+                                        'pending' => 'Pending',
+                                        'confirmed' => 'Approved',
+                                        'processing' => 'For Preparation',
+                                        'ready_for_pickup' => 'Ready for Pick Up',
+                                        'delivered' => 'Delivered',
+                                        default => ucfirst(str_replace('_', ' ', $order->status)),
+                                    };
+                                } else {
+                                    $displayStatus = ucfirst(str_replace('_', ' ', $order->status));
+                                }
+                                $statusColor = match($order->status) {
+                                    'pending' => 'warning',
+                                    'confirmed' => 'info',
+                                    'processing' => 'primary',
+                                    'shipped' => 'info',
+                                    'ready_for_pickup' => 'success',
+                                    'delivered' => 'success',
+                                    'cancelled' => 'danger',
+                                    default => 'secondary',
+                                };
+                            @endphp
+                            <span class="badge bg-{{ $statusColor }} fs-6">
+                                {{ $displayStatus }}
                             </span>
                             @if($order->cancellation_requested && $order->status === 'confirmed')
                                 <br><small class="text-warning"><i class="fas fa-clock me-1"></i>Cancellation Requested</small>
@@ -38,6 +80,24 @@
                             <a href="{{ route('orders.show', $order) }}" class="btn btn-outline-primary me-2" style="border-radius: 8px;">
                                 <i class="fas fa-eye me-1"></i>View Details
                             </a>
+                            @php
+                                // Only show review button for delivered orders (not ready_for_pickup), and not yet reviewed
+                                $shouldShowReviewButton = $order->status === 'delivered' && !$order->is_reviewed && $order->status !== 'ready_for_pickup';
+                                $isReviewedStatus = $order->is_reviewed;
+                                $hasReviewed = $order->isFullyReviewedBy(auth()->id());
+                            @endphp
+                            @if($shouldShowReviewButton)
+                                @if(!$hasReviewed)
+                                    <a href="{{ route('orders.review', $order) }}" class="btn btn-outline-success me-2" style="border-radius: 8px;">
+                                        <i class="fas fa-star me-1"></i>Review Items
+                                    </a>
+                                @endif
+                            @elseif($isReviewedStatus)
+                                <button type="button" class="btn btn-outline-secondary me-2" style="border-radius: 8px;" disabled title="Order already reviewed">
+                                    <i class="fas fa-star me-1"></i>Order Reviewed
+                                </button>
+                            @endif
+                            {{-- Removed duplicate $showReviewBtn logic and button. Only the new logic above is used. --}}
                             @if($order->status === 'pending')
                             <button type="button" class="btn btn-outline-danger" style="border-radius: 8px;"
                                     data-bs-toggle="modal" data-bs-target="#cancellationModal{{ $order->id }}">
@@ -59,7 +119,7 @@
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $orders->links() }}
+                        {{ $orders->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
@@ -114,7 +174,7 @@
                     <div class="alert alert-secondary">
                         <i class="fas fa-info-circle me-2"></i>
                         <strong>Order Details:</strong><br>
-                        <small>Order #{{ $order->order_number }} - {{ ucfirst($order->status) }}</small>
+                        <small>Order #{{ $order->order_number }} - {{ $displayStatus }}</small>
                     </div>
                 </div>
                 <div class="modal-footer">

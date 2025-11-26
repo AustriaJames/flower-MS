@@ -92,7 +92,13 @@ class ProductController extends Controller
         // Remove file upload fields that shouldn't be stored in DB
         unset($validated['main_image_file'], $validated['gallery_images_files']);
 
-        Product::create($validated);
+        try {
+            Product::create($validated);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product created successfully!');

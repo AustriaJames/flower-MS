@@ -57,29 +57,43 @@
                                 <label for="status" class="form-label">Order Status <span class="text-danger">*</span></label>
                                 <select class="form-select @error('status') is-invalid @enderror"
                                         id="status" name="status" required>
-                                    @php
-                                        $allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
-                                        $isPickup = $order->delivery_type === 'pickup';
-                                    @endphp
-                                    @foreach($allStatuses as $status)
                                         @php
-                                            if ($isPickup && $status === 'shipped') {
-                                                continue;
-                                            }
-                                            $label = ucfirst($status);
-                                            if ($isPickup) {
-                                                $label = match($status) {
-                                                    'confirmed' => 'Approved',
-                                                    'processing' => 'For Preparation',
-                                                    'delivered' => 'Ready for Pickup',
-                                                    default => ucfirst($status),
-                                                };
-                                            }
+                                            $allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'ready_for_pickup', 'delivered', 'cancelled'];
+                                            $isPickup = $order->delivery_type === 'pickup';
                                         @endphp
-                                        <option value="{{ $status }}" {{ old('status', $order->status) == $status ? 'selected' : '' }}>
-                                            {{ $label }}
-                                        </option>
-                                    @endforeach
+                                        @foreach($allStatuses as $status)
+                                            @php
+                                                if ($isPickup && $status === 'shipped') {
+                                                    continue;
+                                                }
+                                                $label = ucfirst($status);
+                                                // Standardize label for pickup orders
+                                                if ($isPickup) {
+                                                    $label = match($status) {
+                                                        'pending' => 'Mark as Pending',
+                                                        'confirmed' => 'Mark as Approved',
+                                                        'processing' => 'Mark as For Preparation',
+                                                        'ready_for_pickup' => 'Mark as Ready for Pick Up',
+                                                        'delivered' => 'Mark as Delivered',
+                                                        default => ucfirst($status),
+                                                    };
+                                                } else {
+                                                    $label = match($status) {
+                                                        'pending' => 'Mark as Pending',
+                                                        'confirmed' => 'Mark as Confirmed',
+                                                        'processing' => 'Mark as Processing',
+                                                        'shipped' => 'Mark as Shipped',
+                                                        'ready_for_pickup' => 'Mark as Ready for Pick Up',
+                                                        'delivered' => 'Mark as Delivered',
+                                                        'cancelled' => 'Mark as Cancelled',
+                                                        default => ucfirst($status),
+                                                    };
+                                                }
+                                            @endphp
+                                            <option value="{{ $status }}" {{ old('status', $order->status) == $status ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
                                 </select>
                                 @error('status')
                                     <div class="invalid-feedback">{{ $message }}</div>
